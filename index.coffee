@@ -6,286 +6,236 @@ gulp = require "gulp"
 gutil = require "gulp-util"
 livereload = require "gulp-livereload"
 path = require "path"
+tap = require 'gulp-tap'
+q = require 'q'
 
 module.exports = class Gassetic
-  constructor: (@config, @env, @modules) ->
-    @validateConfig()
+	constructor: (@config, @env, @modules, @log = true) ->
+		@validateConfig()
 
-  ###
-    self explanatory
-  ###
-  validateConfig: () ->
-    if !@getMimetypes()?
-      throw 'missing mimetypes in config'
-    if !@getDefaultTasks()?
-      throw 'missing default task in config'
-    for key of @getMimetypes()
-      if !@getMimetypes()[key][@env]?
-        throw 'missing environment ' + @env + ' in ' + key + ' mimetype'
-      if !@getMimetypes()[key][@env].tasks?
-        throw 'missing task list for ' + @env + ' environment in ' + key + ' mimetype (it can be empty array but must be defined)'
-      for task in @getMimetypes()[key][@env].tasks
-        if !task.name
-          throw 'invalid task "' + task.toString() + '" for ' + key + ' in ' + @env + ' environment, the structure must be like is {name: coffee, args: { bare: true }}'
-      if !@getMimetypes()[key].files?
-        throw 'missing file list for ' + key + ' mimetype'
+	###
+		self explanatory
+	###
+	validateConfig: () ->
+		if !@getMimetypes()?
+			throw 'missing mimetypes in config'
+		if !@getDefaultTypes()?
+			throw 'missing default task in config'
+		for key of @getMimetypes()
+			if !@getMimetypes()[key][@env]?
+				throw 'missing environment ' + @env + ' in ' + key + ' mimetype'
+			if !@getMimetypes()[key][@env].tasks?
+				throw 'missing task list for ' + @env + ' environment in ' + key + ' mimetype (it can be empty array but must be defined)'
+			for task in @getMimetypes()[key][@env].tasks
+				if !task.name
+					throw 'invalid task "' + task.toString() + '" for ' + key + ' in ' + @env + ' environment, the structure must be like is {name: coffee, args: { bare: true }}'
+			if !@getMimetypes()[key].files?
+				throw 'missing file list for ' + key + ' mimetype'
 
-      if !@getMimetypes()[key][@env].outputFolder?
-        throw 'missing outputFolder path in ' + key + ' ' + @env
+			if !@getMimetypes()[key][@env].outputFolder?
+				throw 'missing outputFolder path in ' + key + ' ' + @env
 
-      src = @getSourceFilesForType key
-      what = Object.prototype.toString
-      if what.call(src) != '[object Object]'
-        throw 'wrong file list for ' + key + ' mimetype'
-      for file of src
-        if what.call(file) != '[object String]'
-          throw 'invalid file "' + file + '" for ' + key + ' in ' + @env + ' environment'
+			src = @getSourceFilesForType key
+			what = Object.prototype.toString
+			if what.call(src) != '[object Object]'
+				throw 'wrong file list for ' + key + ' mimetype'
+			for file of src
+				if what.call(file) != '[object String]'
+					throw 'invalid file "' + file + '" for ' + key + ' in ' + @env + ' environment'
 
-  ###
-    @return {Object} mimetypes
-  ###
-  getMimetypes: () ->
-    @config.mimetypes
+	###
+		@return {Object} mimetypes
+	###
+	getMimetypes: () ->
+		@config.mimetypes
 
-  ###
-    @return {Array} default tasks
-  ###
-  getDefaultTasks: () ->
-    @config.default
+	###
+		@return {Array} default tasks
+	###
+	getDefaultTypes: () ->
+		@config.default
 
-  ###
-  ###
-  getSourceFilesForType: (type) ->
-    @getMimetypes()[type].files
+	###
+	###
+	getSourceFilesForType: (type) ->
+		@getMimetypes()[type].files
 
-  clean: () ->
-    gulp.src([
-      config.CSS_LIVE_OUTPUT_FOLDER
-      config.JS_LIVE_OUTPUT_FOLDER
-    ],
-      read: false
-    ).pipe(clean(force: true)).pipe gulp.dest("./")
+	clean: () ->
+		files = []
+		for type of @getMimetypes()
+			@getDestinationPathsForType type
+				.map (f) ->
+					files.push f
+		gulp.src(files, read: false).pipe(clean(force: true))
 
-  ###
-    Builds all
-  ###
-  build: () ->
-    finish = () ->
-      replaceInFiles ENV, ->
-        done()
+	getDestinationPathsForType: (type) ->
+		paths = []
+		for key, value of @getMimetypes()[type].files
+			paths.push path.join @getMimetypes()[type][@env].outputFolder, key
+		paths
 
-    alreadyProcessed = []
-    runningTasks = 0
-    for type in @getDefaultTasks()
-      ((type) ->
-        buildType = ->
-          for destFilename of config.mimetypes[type].files
-            runningTasks++
-            buildFile type, destFilename
-              .on 'end', ->
-                if --runningTasks == 0
-                  finish()
+	###
+		Builds all
+	###
+	build: () ->
+		@replaces = {}
+		@watchFiles = []
+		finalPromise = q.defer()
+		promises = []
+		for type in @getDefaultTypes()
+			promises.push @buildType type
+		done = q.all promises
+		done.then =>
+			@replaceInFiles @replaces
+				.then ->
+					finalPromise.resolve true
+		finalPromise.promise
 
-        runningSubTasks = 0
-        deps = findDependentTasks type
-        for d in deps
-          if alreadyProcessed.indexOf(d) == -1
-            alreadyProcessed.push d
-            for destFilename of config.mimetypes[d].files
-              runningSubTasks++
-              buildFile d, destFilename
-                .on 'end', ->
-                  if --runningSubTasks == 0
-                    buildType()
-        if runningSubTasks == 0
-          buildType()
-      ) type
+	cwd: () ->
+		process.cwd()
 
-  ###
-    Builds one type defined in config
-  ###
-  buildType: (type) ->
-    for destFilename of @getSourceFilesForType(type)
-      runningTasks++
-      buildFile type, destFilename
+	###
+		Builds one type defined in config
+	###
+	buildType: (type) ->
+		buildOne = (type) =>
+			@replaces[type] = {}
+			all = []
+			tasks = @getMimetypes()[type][@env].tasks
+			gutil.log 'Processing:', gutil.colors.magenta(type), 'with', gutil.colors.gray(
+				(tasks.map (t) -> t.name + '(' + (if t.args then JSON.stringify(t.args) else '') + ')').join(', ')
+			) if @log
+			for destFilename of @getSourceFilesForType type
+				all.push @buildFiles type, destFilename
+			q.all all
 
-  ###
-  ###
-  buildFile = (type, destinationFilenameConfigKey) ->
-    tasks = config.mimetypes[type][ENV].tasks
-    gutil.log 'Processing:', gutil.colors.magenta(type), 'with', gutil.colors.gray(
-      (tasks.map (t) -> t.name + '(' + (if t.args then JSON.stringify(t.args) else '') + ')').join(', ')
-    )
-    sourceFiles = getSourceFiles type, destinationFilenameConfigKey
-    destinationFilePath = path.join config.mimetypes[type][ENV].outputFolder, destinationFilenameConfigKey
-    gutil.log ' -', gutil.colors.cyan(destinationFilenameConfigKey), '->', gutil.colors.green(destinationFilePath)
-    for srcFilename in sourceFiles
-      gutil.log gutil.colors.gray('    - ' + srcFilename)
-    pipe = gulp.src sourceFiles
-    for task in tasks
-      if task.args?
-        pipe = pipe.pipe modules[task.name] [task.args]...
-      else
-        pipe = pipe.pipe modules[task.name].call @
-    pipe = pipe.pipe concat destinationFilenameConfigKey
-    pipe.pipe gulp.dest config.mimetypes[type][ENV].outputFolder
+		result = q.defer()
+		deps = @findDependentTypes type
+		if deps.length > 0
+			all = []
+			while deps.length > 0
+				next = deps.shift()
+				all.push @buildType next
+			q.all all
+				.then () =>
+					buildOne.call @, type
+						.then () ->
+							result.resolve true
+		else
+			buildOne.call @, type
+				.then () ->
+					result.resolve true
+		return result.promise
 
-  ###
-    Finds dependent types for type that needs to be run first
-    @param {string} type
-    @return {Array} dependency types
-  ###
-  findDependentTypes: (type) ->
-    deps = []
-    if @config.mimetypes[type].deps?
-      for d in @config.mimetypes[type].deps
-        deps.push d
-        deps = deps.concat @findDependentTypes d
-    deps.reverse()
+	###
+	###
+	buildFiles: (type, destinationFilenameConfigKey) ->
+		@replaces[type][destinationFilenameConfigKey] = []
+		result = q.defer()
+		tasks = @getMimetypes()[type][@env].tasks
+		gutil.log ' -', gutil.colors.cyan(destinationFilenameConfigKey) if @log
+		sourceFiles = @getMimetypes()[type].files[destinationFilenameConfigKey]
+		destination = path.join @getMimetypes()[type][@env].outputFolder, destinationFilenameConfigKey
+		pipe = gulp.src sourceFiles
+		tasks.map (t) =>
+			if t.args?
+				pipe = pipe.pipe @modules[t.name] [@replaceArgs(t.args, destinationFilenameConfigKey)]...
+			else
+				pipe = pipe.pipe @modules[t.name].call @
+		pipe = pipe.pipe gulp.dest destination
+			.pipe tap (f) =>
+				if @getMimetypes()[type][@env].webPath
+					webPath = f.path.substring (path.join(@cwd(), @getMimetypes()[type][@env].outputFolder)).length + 1
+					webPath = path.join @getMimetypes()[type][@env].webPath, webPath
+					@replaces[type][destinationFilenameConfigKey].push webPath
+				@watchFiles.push f.path
+			.on 'end', ->
+				result.resolve true
+		return result.promise
 
-###
-buildFile = (type, destinationFilenameConfigKey) ->
-  tasks = config.mimetypes[type][ENV].tasks
-  gutil.log 'Processing:', gutil.colors.magenta(type), 'with', gutil.colors.gray(
-    (tasks.map (t) -> t.name + '(' + (if t.args then JSON.stringify(t.args) else '') + ')').join(', ')
-  )
-  sourceFiles = getSourceFiles type, destinationFilenameConfigKey
-  destinationFilePath = path.join config.mimetypes[type][ENV].outputFolder, destinationFilenameConfigKey
-  gutil.log ' -', gutil.colors.cyan(destinationFilenameConfigKey), '->', gutil.colors.green(destinationFilePath)
-  for srcFilename in sourceFiles
-    gutil.log gutil.colors.gray('    - ' + srcFilename)
-  pipe = gulp.src sourceFiles
-  for task in tasks
-    if task.args?
-      pipe = pipe.pipe modules[task.name] [task.args]...
-    else
-      pipe = pipe.pipe modules[task.name].call @
-  pipe = pipe.pipe concat destinationFilenameConfigKey
-  pipe.pipe gulp.dest config.mimetypes[type][ENV].outputFolder
+	replaceArgs: (args, filename) ->
+		string = JSON.stringify args
+		string = string.replace '%filename%', filename
+		JSON.parse string
 
-getSourceFiles = (type, destinationFilenameConfigKey) ->
-  config.mimetypes[type].files[destinationFilenameConfigKey]
+	replaceInFiles: (replacements, callback) ->
+		regexs = []
+		for type of replacements
+			for one of replacements[type]
+				scripts = '\n'
+				for filename in replacements[type][one]
+					scripts += @buildScriptString(filename) + '\n'
+				regexs.push
+					pattern: new RegExp('<!-- ' + @env + ':' + one + " -->([\\s\\S]*?)<!-- endbuild -->", "ig")
+					replacement: "<!-- " + @env + ":" + one + " -->" + scripts + "<!-- endbuild -->"
 
-buildScriptString = (fileWebPath) ->
-  ext = path.extname fileWebPath
-  switch ext
-    when ".css"
-      str = "<link rel=\"stylesheet\" href=\"" + fileWebPath + "\" />"
-    when ".js"
-      str = "<script src=\"" + fileWebPath + "\"></script>"
-    else
-      str = '<!-- extension not supported -->'
-  str
+		result = q.defer()
+		for file in @config.replacementPaths
+			gulp.src file.src
+				.pipe frep regexs
+				.pipe gulp.dest file.dest
+					.on 'end', ->
+						result.resolve true
+		return result.promise
 
-replaceInFiles = (searchString, callback) ->
-  replacements = []
-  for type of config.mimetypes
-    for file of config.mimetypes[type].files
-      if config.mimetypes[type][ENV].webPath?
-        webPath = config.mimetypes[type][ENV].webPath
-        fileWebPath = path.join webPath, file
-        replacements.push
-          pattern: new RegExp("<!-- " + searchString + ":" + file + " -->([\\s\\S]*?)<!-- endbuild -->", "ig")
-          replacement: "<!-- " + searchString + ":" + file + " -->" + buildScriptString(fileWebPath) + "<!-- endbuild -->"
+	buildScriptString: (fileWebPath) ->
+		ext = path.extname fileWebPath
+		switch ext
+			when ".css"
+				str = "<link rel=\"stylesheet\" href=\"" + fileWebPath + "\" />"
+			when ".js"
+				str = "<script src=\"" + fileWebPath + "\"></script>"
+			else
+				str = '<!-- extension not supported -->'
+		str
 
-  sectionCounting = 0
-  for section in config.replacementFiles
-    sectionCounting++
-    ((section) ->
-      gulp.src section.src
-        .pipe frep replacements
-        .pipe gulp.dest section.dest
-        .on 'end', ->
-          gutil.log 'Replacing in', gutil.colors.blue(section.src)
-          if --sectionCounting == 0
-            callback.call()
-    ) section
+	###
+		Finds dependent types for type that needs to be run first
+		@param {string} type
+		@param {boolean} recursive
+		@return {Array} dependency types
+	###
+	findDependentTypes: (type, recursive) ->
+		deps = []
+		if @config.mimetypes[type].deps?
+			for d in @config.mimetypes[type].deps
+				deps.push d
+				if recursive
+					deps = deps.concat @findDependentTypes d
+		deps
 
-# THE DEFAULT TASK
-gulp.task 'default', (done) ->
-  finish = () ->
-    replaceInFiles ENV, ->
-      done()
+	watch: () ->
+		server = livereload()
 
-  alreadyProcessed = []
-  runningTasks = 0
-  for type in config.default
-    ((type) ->
-      buildType = ->
-        for destFilename of config.mimetypes[type].files
-          runningTasks++
-          buildFile type, destFilename
-            .on 'end', ->
-              if --runningTasks == 0
-                finish()
+		toWatch = []
+		for type in @getDefaultTypes()
+			toWatch.push type
+			for d in @findDependentTypes type, true
+				if toWatch.indexOf(d) == -1
+					toWatch.push d
 
-      runningSubTasks = 0
-      deps = findDependentTasks type
-      for d in deps
-        if alreadyProcessed.indexOf(d) == -1
-          alreadyProcessed.push d
-          for destFilename of config.mimetypes[d].files
-            runningSubTasks++
-            buildFile d, destFilename
-              .on 'end', ->
-                if --runningSubTasks == 0
-                  buildType()
-      if runningSubTasks == 0
-        buildType()
-    ) type
+		for type in toWatch
+			if @getMimetypes()[type].watch?
+				@watchSources @getMimetypes()[type].watch, type
+			else
+				for destinationFile of @getMimetypes()[type].files
+					sources = @getMimetypes()[type].files[destinationFile]
+					@watchSources sources, type, destinationFile
 
-# WATCH TASK
-gulp.task 'watch', ['default'], () ->
-  server = livereload()
-  watchIt = (sources, type, destFile) ->
-    gutil.log 'Watching', gutil.colors.cyan(sources.length), gutil.colors.magenta(type), 'paths for', gutil.colors.green(destFile), '...'
-    gulp.watch sources
-      .on 'change', (e) ->
-        if destFile != '*'
-          destFiles = [destFile]
-        else
-          destFiles = []
-          for f of config.mimetypes[type].files
-            destFiles.push f
-        for f in destFiles
-            buildFile type, f
+		for file in @watchFiles
+			gutil.log gutil.colors.yellow new Date() if @log
+			gutil.log gutil.blue file if @log
+			server.changed file
 
-  # create array of types to watch
-  allTypes = []
-  for type in config.default
-    allTypes.push type
-    for d in findDependentTasks(type)
-      if allTypes.indexOf(d) == -1
-        allTypes.push d
-
-  # watch sources
-  for type in allTypes
-    if config.mimetypes[type].watch?
-      watchIt config.mimetypes[type].watch, type, '*'
-      continue
-    for destFile of config.mimetypes[type].files
-      sources = getSourceFiles(type, destFile)
-      ((type, destFile) ->
-        watchIt sources, type, destFile
-      ) type, destFile
-
-  # watch destination and notify livereload
-  for type in allTypes
-    for destFile of config.mimetypes[type].files
-      relativePath = path.join config.mimetypes[type][ENV].outputFolder, destFile
-      if config.mimetypes[type][ENV].webPath?
-        gulp.watch relativePath
-          .on 'change', (e) ->
-            gutil.log gutil.colors.yellow new Date()
-            gutil.log gutil.colors.blue e.path
-            server.changed e.path
-
-gulp.task "clean", ->
-  return
-  gulp.src([
-    config.CSS_LIVE_OUTPUT_FOLDER
-    config.JS_LIVE_OUTPUT_FOLDER
-  ],
-    read: false
-  ).pipe(clean(force: true)).pipe gulp.dest("./")
-###
+	watchSources: (sources, type, destinationFile = '*') ->
+		gutil.log 'Watching', gutil.colors.cyan(sources.length), gutil.colors.magenta(type), 'paths for', gutil.colors.green(destFile), '...' if @log
+		gulp.watch sources
+			.on 'change', (e) =>
+				if destinationFile != '*'
+					destFiles = [destinationFile]
+				else
+					destFiles = []
+					for f of @getMimetypes()[type].files
+						destFiles.push f
+				for f in destFiles
+					@buildFiles type, destinationFile

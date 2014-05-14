@@ -19,28 +19,3 @@ gulp.task 'test', () ->
 		.pipe coffee()
 		.pipe gulp.dest 'test'
 		.pipe mocha reporter: reporter, ui: 'tdd'
-
-gulp.task 'testt', ->
-	testConfig =
-		mimetypes:
-			css:
-				dev:
-					outputFolder: 'tmp'
-					webPath: '/tmp'
-					tasks: [
-						'test'
-					]
-				prod:
-					outputFolder: 'tmp'
-					webPath: '/tmp'
-				files:
-					'final.css': [
-						'tmp/lesstest.less'
-					]
-		default: [
-			'css'
-		]
-
-	ga = new Gassetic testConfig, 'dev', modules
-
-
