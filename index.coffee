@@ -222,10 +222,11 @@ module.exports = class Gassetic
 					sources = @getMimetypes()[type].files[destinationFile]
 					@watchSources sources, type, destinationFile
 
-		for file in @watchFiles
-			gutil.log gutil.colors.yellow new Date() if @log
-			gutil.log gutil.colors.blue file if @log
-			server.changed file
+		gulp.watch @watchFiles
+			.on 'change', (e) =>
+				gutil.log gutil.colors.yellow new Date() if @log
+				gutil.log gutil.colors.blue e.path if @log
+				server.changed e.path
 
 	watchSources: (sources, type, destinationFile = '*') ->
 		gutil.log 'Watching', gutil.colors.cyan(sources.length), gutil.colors.magenta(type), 'paths for', gutil.colors.green(destinationFile), '...' if @log
@@ -238,4 +239,4 @@ module.exports = class Gassetic
 					for f of @getMimetypes()[type].files
 						destFiles.push f
 				for f in destFiles
-					@buildFiles type, destinationFile
+					@buildFiles type, f
