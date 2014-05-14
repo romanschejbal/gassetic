@@ -224,7 +224,7 @@ module.exports = class Gassetic
 
 		for file in @watchFiles
 			gutil.log gutil.colors.yellow new Date() if @log
-			gutil.log gutil.blue file if @log
+			gutil.log gutil.colors.blue file if @log
 			server.changed file
 
 	watchSources: (sources, type, destinationFile = '*') ->
