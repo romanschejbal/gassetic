@@ -228,7 +228,7 @@ module.exports = class Gassetic
 			server.changed file
 
 	watchSources: (sources, type, destinationFile = '*') ->
-		gutil.log 'Watching', gutil.colors.cyan(sources.length), gutil.colors.magenta(type), 'paths for', gutil.colors.green(destFile), '...' if @log
+		gutil.log 'Watching', gutil.colors.cyan(sources.length), gutil.colors.magenta(type), 'paths for', gutil.colors.green(destinationFile), '...' if @log
 		gulp.watch sources
 			.on 'change', (e) =>
 				if destinationFile != '*'
