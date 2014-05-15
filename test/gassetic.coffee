@@ -92,8 +92,4 @@ suite 'Gassetic', ->
 						files.splice files.indexOf(relative), 1
 					.on 'end', ->
 						assert.equal files.length, 0
-						ga.watch()
 						done()
-
-		test 'should watch files', (done) ->
-			done()
