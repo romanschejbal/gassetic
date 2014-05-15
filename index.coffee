@@ -61,12 +61,16 @@ module.exports = class Gassetic
 		@getMimetypes()[type].files
 
 	clean: () ->
+		result = q.defer()
 		files = []
 		for type of @getMimetypes()
 			@getDestinationPathsForType type
 				.map (f) ->
 					files.push f
 		gulp.src(files, read: false).pipe(clean(force: true))
+			.on 'end', ->
+				result.resolve true
+		result.promise
 
 	getDestinationPathsForType: (type) ->
 		paths = []
@@ -169,14 +173,26 @@ module.exports = class Gassetic
 					pattern: new RegExp('<!-- ' + @env + ':' + one + " -->([\\s\\S]*?)<!-- endbuild -->", "ig")
 					replacement: "<!-- " + @env + ":" + one + " -->" + scripts + "<!-- endbuild -->"
 
-		result = q.defer()
-		for file in @config.replacementPaths
-			gulp.src file.src
-				.pipe frep regexs
-				.pipe gulp.dest file.dest
-					.on 'end', ->
-						result.resolve true
-		return result.promise
+		allfiles = []
+		progress = []
+		# find the templates first
+		gulp.src @config.replacementPaths, read: false
+			.pipe tap (file) ->
+				allfiles.push file.path
+			.on 'end', ->
+				# do the replace
+				for file in allfiles
+					result = q.defer()
+					progress.push result.promise
+					((file, deferred) ->
+						gulp.src file
+							.pipe frep regexs
+							.pipe gulp.dest path.dirname file
+								.on 'end', ->
+									deferred.resolve true
+					) file, result
+
+		return q.all progress
 
 	buildScriptString: (fileWebPath) ->
 		ext = path.extname fileWebPath

@@ -72,12 +72,7 @@
           }
         },
         "default": ['css', 'js'],
-        replacementPaths: [
-          {
-            src: './test/templates/**/*.html',
-            dest: './test/templates'
-          }
-        ]
+        replacementPaths: ['./test/templates/**/*.html']
       };
       ga = new Gassetic(config, 'dev', modules, false);
       return done();
@@ -91,7 +86,7 @@
     });
     return suite('build test', function() {
       test('should clean destination files', function(done) {
-        return ga.clean().on('end', function() {
+        return ga.clean().then(function() {
           var count, files, type;
           files = [];
           for (type in ga.getMimetypes()) {
@@ -108,7 +103,7 @@
           });
         });
       });
-      return test('should copy source files to destination folder', function(done) {
+      test('should copy source files to destination folder', function(done) {
         return ga.build().then(function(what) {
           var cwd, files, type;
           files = [];
@@ -128,6 +123,9 @@
             return done();
           });
         });
+      });
+      return test('should watch files', function(done) {
+        return done();
       });
     });
   });

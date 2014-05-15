@@ -50,7 +50,7 @@ suite 'Gassetic', ->
 					}
 			default: ['css', 'js']
 			replacementPaths: [
-				{ src: './test/templates/**/*.html', dest: './test/templates' }
+				'./test/templates/**/*.html'
 			]
 
 		ga = new Gassetic config, 'dev', modules, false
@@ -63,7 +63,7 @@ suite 'Gassetic', ->
 
 	suite 'build test', ->
 		test 'should clean destination files', (done) ->
-			ga.clean().on 'end', ->
+			ga.clean().then ->
 				files = []
 				for type of ga.getMimetypes()
 					ga.getDestinationPathsForType type
@@ -94,3 +94,6 @@ suite 'Gassetic', ->
 						assert.equal files.length, 0
 						ga.watch()
 						done()
+
+		test 'should watch files', (done) ->
+			done()
