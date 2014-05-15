@@ -1,7 +1,5 @@
-# gassetic
+# Gassetic [![build status](https://travis-ci.org/crossborne/gassetic.svg?branch=master)](https://travis-ci.org/crossborne/gassetic) ![deps status](https://david-dm.org/crossborne/gassetic.png)
 
-![build status](https://travis-ci.org/crossborne/gassetic.svg?branch=master)
-![deps status](https://david-dm.org/crossborne/gassetic.png)
 
 ## Summary
 Gassetic is a Symfony2 Assetic replacement which is based on gulp build tool for more comfortable development and dependency management
