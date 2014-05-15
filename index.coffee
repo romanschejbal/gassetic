@@ -144,6 +144,8 @@ module.exports = class Gassetic
 		tasks.map (t) =>
 			if t.args?
 				pipe = pipe.pipe @modules[t.name] [@replaceArgs(t.args, destinationFilenameConfigKey)]...
+			else if t.callback?
+				pipe = pipe.pipe @modules[t.name] [@modules[t.callback]]...
 			else
 				pipe = pipe.pipe @modules[t.name].call @
 		pipe = pipe.pipe gulp.dest destination
