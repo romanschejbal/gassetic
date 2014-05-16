@@ -197,7 +197,7 @@ module.exports = class Gassetic
 		return q.all progress
 
 	buildScriptString: (fileWebPath) ->
-		fileWebPath = fileWebPath.replace '\\', '/'
+		fileWebPath = fileWebPath.replace /\\/g, '/'
 		ext = path.extname fileWebPath
 		switch ext
 			when ".css"
