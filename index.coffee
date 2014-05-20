@@ -1,4 +1,3 @@
-concat = require "gulp-concat"
 clean = require 'gulp-clean'
 frep = require "gulp-frep"
 fs = require "fs"
@@ -170,7 +169,7 @@ module.exports = class Gassetic
 			for one of replacements[type]
 				scripts = '\n'
 				for filename in replacements[type][one]
-					scripts += @buildScriptString(filename) + '\n'
+					scripts += @buildScriptString(type, filename) + '\n'
 				regexs.push
 					pattern: new RegExp('<!-- ' + @env + ':' + one + " -->([\\s\\S]*?)<!-- endbuild -->", "ig")
 					replacement: "<!-- " + @env + ":" + one + " -->" + scripts + "<!-- endbuild -->"
@@ -196,17 +195,20 @@ module.exports = class Gassetic
 
 		return q.all progress
 
-	buildScriptString: (fileWebPath) ->
-		fileWebPath = fileWebPath.replace /\\/g, '/'
-		ext = path.extname fileWebPath
-		switch ext
-			when ".css"
-				str = "<link rel=\"stylesheet\" href=\"" + fileWebPath + "\" />"
-			when ".js"
-				str = "<script src=\"" + fileWebPath + "\"></script>"
-			else
-				str = '<!-- extension not supported -->'
-		str
+	buildScriptString: (type, fileWebPath) ->
+		fileWebPath = fileWebPath.replace /\\/g, '/' # windows workaround
+		if @getMimetypes()[type][@env].htmlTag?
+			return @getMimetypes()[type][@env].htmlTag.replace /%path%/g, fileWebPath
+		else
+			ext = path.extname fileWebPath
+			switch ext
+				when ".css"
+					str = "<link rel=\"stylesheet\" href=\"" + fileWebPath + "\" />"
+				when ".js"
+					str = "<script src=\"" + fileWebPath + "\"></script>"
+				else
+					str = '<!-- extension not supported -->'
+			str
 
 	###
 		Finds dependent types for type that needs to be run first

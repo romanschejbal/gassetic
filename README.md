@@ -2,7 +2,7 @@
 
 
 ## Summary
-Gassetic is a Symfony2 Assetic replacement which is based on the gulp build tool for more 
+Gassetic is a Symfony2 Assetic replacement which is based on the gulp build tool for more
 comfortable frontend development and dependency management
 
 ## Advantages over assetic
@@ -18,8 +18,8 @@ Gassetic makes it easy to manage your frontend assets. You can install JS and CS
 through a package manager like [Bower](http://bower.io/) and then compile them using tools
 from [gulp.js](http://gulpjs.com)
 
-Gassetic replaces "<!-- {env}:{filename} --><!-- endbuild -->" strings in your 
-templates with your generated CSS and JS files. In your gassetic.yml file you can 
+Gassetic replaces "<!-- {env}:{filename} --><!-- endbuild -->" strings in your
+templates with your generated CSS and JS files. In your gassetic.yml file you can
 specify which files and tasks to run on the input files and the names of the output
 files.
 
@@ -43,7 +43,7 @@ mimetypes:
                                        #   dev files aren't pushed to your repo)
             webPath:      /tmp/css     # The path used for the frontend
             # This is the list of tasks to run on the files
-            # You can add gulp 
+            # You can add gulp
             tasks:
                 - { name: less }
         # In 'prod' mode, use these settings
@@ -55,7 +55,8 @@ mimetypes:
                 - { name: less }
                 - { name: minify }
                 - { name: concat, args: '%filename%' }
-                
+            htmlTag: '<script type="text/javascript" src="{{ asset("%path%") }}"></script>' # custom html tag
+
         # This is the list of source files to apply the above settings
         files:
             frontend.css: # This is the output filename
@@ -68,12 +69,12 @@ mimetypes:
             backend.css:
                 - assets/vendor/bootstrap-daterangepicker/daterangepicker-bs3.css
                 - assets/css/backend.css
-                
+
         # Watch these files for changes (optional)
         watch:
             - assets/**/*.less
             - assets/**/*.css
-            
+
     # This section contains the settings for your coffee files (optional)
     coffee:
         dev:
@@ -108,7 +109,7 @@ mimetypes:
             tasks:
                 - { name: concat, args: '%filename%' }
                 - { name: uglify, args: { mangle: false } }
-        
+
         # Here is a list of files to apply the above tasks to
         files:
             jquery.js: # This is the output filename

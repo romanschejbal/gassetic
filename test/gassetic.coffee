@@ -19,6 +19,7 @@ suite 'Gassetic', ->
 						tasks: [
 							{ name: 'concat', args: '%filename%' }
 						]
+						htmlTag: '<script type="text/javascript" src="{{ asset("%path%") }}"></script>'
 					files:
 						'concated.css': [
 							'./test/src/css/**/*.css'
