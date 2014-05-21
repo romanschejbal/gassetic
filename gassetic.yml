@@ -1,6 +1,6 @@
 requires:
-    coffee: gulp-coffee
-    concat: gulp-concat
+    coffee: node_modules/gulp-coffee
+    concat: node_modules/gulp-concat
 mimetypes:
     css:
         dev:
