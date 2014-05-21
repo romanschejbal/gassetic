@@ -26,6 +26,8 @@ In your Twig templates you can split out the dev and prod assets like this:
 {% endif %}
 ```
 
+Further reading: [Multiple Environments](https://github.com/ollietb/gassetic/blob/master/Resources/doc/MultipleEnvironments.md)
+
 ## How to replace Assetic
 
 Replacing Assetic is a relatively easy process
@@ -76,6 +78,8 @@ _layout.html.twig_
 _gassetic.yml_
 ```yaml
 mimetypes:
+    css:
+        # Your CSS settings here...
     js:
         dev:
             outputFolder: web/tmp/js
