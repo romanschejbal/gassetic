@@ -15,7 +15,7 @@ Gassetic is an [Assetic] (https://github.com/kriswallsmith/assetic) replacement 
 
 Gassetic makes it easy to manage your frontend assets. You can install JS and CSS libs through a package manager like [Bower](http://bower.io/) and then compile them using tools from [gulp.js](http://gulpjs.com)
 
-Gassetic replaces "<!-- {env}:{filename} --><!-- endbuild -->" strings in your templates with your generated CSS and JS files. In your gassetic.yml file you can specify which files and tasks to run on the input files and the names of the output files.
+Gassetic replaces ```"<!-- {env}:{filename} --><!-- endbuild -->"``` strings in your templates with your generated CSS and JS files. In your gassetic.yml file you can specify which files and tasks to run on the input files and the names of the output files.
 
 [Gulp](http://gulpjs.com/plugins/) has literally hundreds of plugins that you can include in your gulpfile and process on your frontend assets.
 
@@ -26,6 +26,11 @@ Gassetic replaces "<!-- {env}:{filename} --><!-- endbuild -->" strings in your t
 
 ### yaml example with gassetic.yml
 ```yml
+requires:
+    less: node_modules/gulp-less
+    minify: node_modules/gulp-minify-css
+    concat: node_modules/gulp-concat
+    uglify: node_modules/gulp-uglify
 mimetypes:
     # This section contains the formatters for the css files
     css:
@@ -89,57 +94,15 @@ default:
     - css
 ```
 
-2) Create ```gulpfile.js```
-```js
-var coffee, config, env, fs, gassetic, gulp, gutil, jsYaml, less, modules, yargs;
-fs = require("fs");
-gulp = require("gulp");
-gutil = require("gulp-util");
-jsYaml = require("js-yaml");
-yargs = require("yargs");
-gassetic = require("gassetic");
+2) Within root of your project run:
 
-// install all the modules you need with npm install $module --save
-modules = {};
-modules.concat = require("gulp-concat");
-modules.coffee = coffee = require("gulp-coffee");
-modules.less = less = require("gulp-less");
-modules.minify = require("gulp-minify-css");
-modules.uglify = require("gulp-uglify");
+	npm install gulp-less
+    npm install gulp-minify-css
+    npm install gulp-uglify
+    npm install gulp-concat
+    ... else that you need and have defined in the 'requires' section of the config
 
-// load the config
-config = jsYaml.safeLoad(fs.readFileSync('gassetic.yml', 'utf8'));
-
-env = yargs.argv.env || 'prod';
-
-gulp.task('default', function() {
-	var ga = new gassetic(config, 'dev', modules);
-	ga.clean().then(function() {
-		ga.build().then(function() {
-			ga.watch();
-		});
-	});
-});
-
-gulp.task('build', function() {
-	var ga = new gassetic(config, env, modules);
-	ga.clean().then(function() {
-		ga.build();
-	});
-});
-
-gulp.task('clean', function() {
-  var ga = new gassetic(config, env, modules);
-  ga.clean();
-});
-
-```
-
-3) Within root of your project run:
-
-	npm install gassetic --save
-
-4) Update your templates from
+3) Update your templates from
 
 	<link rel="stylesheet" ...
 
@@ -149,19 +112,20 @@ To:
 
 The strings "<!-- {environment}:{filename} --><!-- endbuild -->" will be searched for in the 'replacementPaths' list in the settings and replaced with the generated tags and files
 
-5) run ```gulp``` for watching and livereloading the files
+4) run ```gulp``` for watching and livereloading the files
 
-6) run ```gulp build``` for production build
+5) run ```gulp build``` for production build
 
-7) run ```gulp build --env=custom``` for custom build
+6) run ```gulp build --env=custom``` for custom build
 
 Done.
 
 ## More docs
 
 - [Using Gassetic with Symfony2](https://github.com/ollietb/gassetic/blob/master/Resources/doc/GasseticAndSymfony2.md)
-- [Advanced usage: Multiple environments] (https://github.com/ollietb/gassetic/blob/master/Resources/doc/MultipleEnvironments.md)
+- [Advanced usage: Multiple environments](https://github.com/ollietb/gassetic/blob/master/Resources/doc/MultipleEnvironments.md)
 - [Advanced usage: Managing dependencies](https://github.com/ollietb/gassetic/blob/master/Resources/doc/ManagingDependencies.md)
+- [Advanced usage: Custom tasks](https://github.com/ollietb/gassetic/blob/master/Resources/doc/CustomTasks.md)
 
 #### @todo:
 - better readme

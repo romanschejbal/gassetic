@@ -77,6 +77,10 @@ _layout.html.twig_
 
 _gassetic.yml_
 ```yaml
+requires:
+    concat: node_modules/gulp-concat
+    uglify: node_modules/gulp-uglify
+    freeze: node_modules/gulp-freeze
 mimetypes:
     css:
         # Your CSS settings here...
@@ -113,16 +117,16 @@ mimetypes:
 
 #### 3. Run gulp
 
-First build the dev environment
+First build and watch the dev environment
 
 ```
-    gulp build --env=dev
+    gassetic --env=dev
 ```
 
 And then gulp build for the prod environment
 
 ```
-    gulp build --env=prod
+    gassetic build --env=prod
 ```
 
 The resulting output is:

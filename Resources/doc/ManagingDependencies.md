@@ -3,6 +3,10 @@
 If you need some preprocessing of files (for example coffeescript) then you can add the dependency using the 'deps' option:
 
 ```yml
+requires:
+    coffee: node_modules/gulp-coffee
+    concat: node_modules/gulp-concat
+    uglify: node_modules/gulp-uglify
 mimetypes:
     # This section contains the settings for your coffee files (optional)
     coffee:

@@ -3,6 +3,12 @@
 Most of the time you want to have different scripts for development and production environments. This makes it easy to debug in your dev environment while keeping the processed files for production.
 
 ```yaml
+requires:
+    coffee: node_modules/gulp-coffee
+    concat: node_modules/gulp-concat
+    uglify: node_modules/gulp-uglify
+    minify: node_modules/gulp-minify
+    less:   node_modules/gulp-less
 mimetypes:
     # This section contains the formatters for the css files
     css:
@@ -97,4 +103,3 @@ This will replace the following strings with the generated files
   <!-- dev:app.js --><!-- endbuild -->
 <?php endif ?>
 ```
-
