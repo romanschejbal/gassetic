@@ -8,7 +8,9 @@ The majority of the configuration is in the gassetic.yml file. There are a numbe
 
 ## Installation
 
-@todo
+```
+npm install -g gassetic
+```
 
 ## Working with Environments
 
@@ -26,7 +28,7 @@ In your Twig templates you can split out the dev and prod assets like this:
 {% endif %}
 ```
 
-Further reading: [Multiple Environments](https://github.com/ollietb/gassetic/blob/master/Resources/doc/MultipleEnvironments.md)
+Further reading: [Multiple Environments](https://github.com/crossborne/gassetic/blob/master/Resources/doc/MultipleEnvironments.md)
 
 ## How to replace Assetic
 
@@ -34,7 +36,7 @@ Replacing Assetic is a relatively easy process
 
 #### 1 Install your libraries via [Bower](http://bower.io/)
 
-We install all our frontend assets to a folder called 'assets' in the root directory. You can install them to wherever you want.
+We install all our frontend assets to a folder called 'assets' in the root directory. You can install them to wherever you want. For how to change the bower directory please follow [this link](http://stackoverflow.com/questions/14079833/how-to-change-bowers-default-components-folder).
 
 ```
 bower search bootstrap
