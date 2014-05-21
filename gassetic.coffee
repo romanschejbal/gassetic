@@ -155,6 +155,8 @@ module.exports = class Gassetic
 		destination = path.join @getMimetypes()[type][@env].outputFolder, destinationFilenameConfigKey
 		pipe = gulp.src sourceFiles
 		tasks.map (t) =>
+			if !@modules[t.name]?
+				throw 'calling ' + t.name + ' task but it has not been defined, add it into the requires array'
 			if t.args?
 				pipe = pipe.pipe @modules[t.name] [@replaceArgs(t.args, destinationFilenameConfigKey)]...
 			else if t.callback?

@@ -7,7 +7,7 @@ coffee = require 'gulp-coffee'
 # modules
 modules = {}
 
-reporter = 'spec'
+reporter = 'dot'
 
 gulp.task 'default', ['test'], ->
 	#reporter = 'min'
