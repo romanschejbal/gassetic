@@ -1,3 +1,4 @@
 node_modules
 test/dest/**
 test/*.js
+gassetic.js
