@@ -124,10 +124,10 @@ Done.
 
 ## More docs
 
-- [Using Gassetic with Symfony2](https://github.com/ollietb/gassetic/blob/master/Resources/doc/GasseticAndSymfony2.md)
-- [Advanced usage: Multiple environments](https://github.com/ollietb/gassetic/blob/master/Resources/doc/MultipleEnvironments.md)
-- [Advanced usage: Managing dependencies](https://github.com/ollietb/gassetic/blob/master/Resources/doc/ManagingDependencies.md)
-- [Advanced usage: Custom tasks](https://github.com/ollietb/gassetic/blob/master/Resources/doc/CustomTasks.md)
+- [Using Gassetic with Symfony2](https://github.com/crossborne/gassetic/blob/master/Resources/doc/GasseticAndSymfony2.md)
+- [Advanced usage: Multiple environments](https://github.com/crossborne/gassetic/blob/master/Resources/doc/MultipleEnvironments.md)
+- [Advanced usage: Managing dependencies](https://github.com/crossborne/gassetic/blob/master/Resources/doc/ManagingDependencies.md)
+- [Advanced usage: Custom tasks](https://github.com/crossborne/gassetic/blob/master/Resources/doc/CustomTasks.md)
 
 #### @todo:
 - better readme
