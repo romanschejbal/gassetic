@@ -112,11 +112,13 @@ To:
 
 The strings "<!-- {environment}:{filename} --><!-- endbuild -->" will be searched for in the 'replacementPaths' list in the settings and replaced with the generated tags and files
 
-4) run ```gulp``` for watching and livereloading the files
+4) install gassetic ```npm install -g gassetic```
 
-5) run ```gulp build``` for production build
+5) run ```gassetic``` for watching and livereloading the files
 
-6) run ```gulp build --env=custom``` for custom build
+6) run ```gassetic build --env=prod``` for production build
+
+7) run ```gassetic build --env=custom``` for custom build
 
 Done.
 

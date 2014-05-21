@@ -120,7 +120,7 @@ mimetypes:
 First build and watch the dev environment
 
 ```
-    gassetic --env=dev
+    gassetic
 ```
 
 And then gulp build for the prod environment
