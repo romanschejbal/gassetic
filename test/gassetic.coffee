@@ -2,14 +2,11 @@ assert = require 'assert'
 gulp = require 'gulp'
 tap = require 'gulp-tap'
 path = require 'path'
-modules = {}
-modules.coffee = require 'gulp-coffee'
-modules.concat = require 'gulp-concat'
 
 suite 'Gassetic', ->
 	ga = null
 	setup (done) ->
-		Gassetic = require '../index'
+		Gassetic = require '../gassetic'
 		config =
 			mimetypes:
 				css:
@@ -54,7 +51,9 @@ suite 'Gassetic', ->
 				'./test/templates/**/*.html'
 			]
 
-		ga = new Gassetic config, 'dev', modules, false
+		ga = new Gassetic 'dev', false
+		ga.config = config
+		ga.validateConfig()
 		done()
 
 	suite 'dependency test', ->

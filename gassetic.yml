@@ -1,0 +1,39 @@
+requires:
+    coffee: gulp-coffee
+    concat: gulp-concat
+mimetypes:
+    css:
+        dev:
+            outputFolder: "./test/dest"
+            webPath: "/web"
+            tasks:
+                - { name: "concat", args: "%filename%" }
+            htmlTag: "<script type='text/javascript' src='{{ asset('%path%') }}'></script>"
+        files:
+            concated.css:
+                - "./test/src/css/**/*.css"
+    coffee:
+        dev:
+            outputFolder: "./test/dest"
+            tasks:
+                - { name: "coffee", args: { bare: true } }
+        files:
+            coffee.js:
+                - "./test/src/coffee/**/*.coffee"
+    js:
+        deps:
+            - "coffee"
+        dev:
+            outputFolder: "./test/dest"
+            webPath: "/web"
+            tasks:
+                - { name: "concat", args: "%filename%" }
+        files:
+            js.js:
+                - "./test/src/js/**/*.js"
+                - "./test/dest/coffee.js/**/*.js"
+default:
+    - css
+    - js
+replacementPaths:
+    - "./test/templates/**/*.html"
