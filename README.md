@@ -2,8 +2,7 @@
 
 
 ## Summary
-Gassetic is a Symfony2 Assetic replacement which is based on the gulp build tool for more 
-comfortable frontend development and dependency management
+Gassetic is a [Assetic] (https://github.com/kriswallsmith/assetic) replacement which is based on the gulp build tool for more comfortable frontend development and dependency management
 
 ## Advantages over assetic
 - CSS live reload (injects modified css files into page without refreshing page)
@@ -14,17 +13,11 @@ comfortable frontend development and dependency management
 
 ## How it works
 
-Gassetic makes it easy to manage your frontend assets. You can install JS and CSS libs
-through a package manager like [Bower](http://bower.io/) and then compile them using tools
-from [gulp.js](http://gulpjs.com)
+Gassetic makes it easy to manage your frontend assets. You can install JS and CSS libs through a package manager like [Bower](http://bower.io/) and then compile them using tools from [gulp.js](http://gulpjs.com)
 
-Gassetic replaces "<!-- {env}:{filename} --><!-- endbuild -->" strings in your 
-templates with your generated CSS and JS files. In your gassetic.yml file you can 
-specify which files and tasks to run on the input files and the names of the output
-files.
+Gassetic replaces "<!-- {env}:{filename} --><!-- endbuild -->" strings in your templates with your generated CSS and JS files. In your gassetic.yml file you can specify which files and tasks to run on the input files and the names of the output files.
 
-[Gulp](http://gulpjs.com/plugins/) has literally hundreds of plugins that you can include in your
-gulpfile and process on your frontend assets.
+[Gulp](http://gulpjs.com/plugins/) has literally hundreds of plugins that you can include in your gulpfile and process on your frontend assets.
 
 
 ## Installation
@@ -193,9 +186,7 @@ To:
 		<!-- prod:frontend.css --><!--endbuild-->
 	{% endif %}
 
-The strings "<!-- {environment}:{filename} --><!-- endbuild -->" will be
-searched for in the 'replacementPaths' list in the settings and replaced
-with the generated tags and files
+The strings "<!-- {environment}:{filename} --><!-- endbuild -->" will be searched for in the 'replacementPaths' list in the settings and replaced with the generated tags and files
 
 5) run ```gulp``` for watching and livereloading the files
 
@@ -207,8 +198,6 @@ Done.
 
 #### @todo:
 - better readme
-- add custom script tags
-
 
 The MIT License (MIT)
 
