@@ -4,7 +4,7 @@
   "description": "Symfony2 Assetic replacement based on the gulp build tool",
   "main": "index.js",
   "scripts": {
-    "test": "gulp test"
+    "test": "coffee -c ./gassetic.coffee && mocha -u tdd"
   },
   "bin": {
     "gassetic": "bin.js"
