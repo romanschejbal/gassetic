@@ -1,4 +1,4 @@
-## Using Gassetic with Symfony2
+# Using Gassetic with Symfony2
 
 Assetic has made it easy for Symfony2 developers to automatically process their frontend assets, but Assetic has some disadvantages. It is slow, doesn't manage dependencies and hard to debug. Gassetic is the next evolution of Assetic, using best practice tools for building assets and managing dependencies. It uses a node.js build tool called gulp.js to process a list of files, applying user-specified filters like less, uglify, concat etc and saving the generated tags in your templates. When used with a dependency manager like Bower, it becomes easy to install, update and manage your CSS and JS libraries.
 
@@ -16,6 +16,7 @@ Gassetic can apply different filters depending on the environment. We can use th
 
 In your Twig templates you can split out the dev and prod assets like this:
 
+```twig
 {% if app.environment == 'prod' %}
   <!-- prod:bootstrap.css --><!-- endbuild -->
   <!-- prod:frontend.css --><!-- endbuild -->
@@ -23,6 +24,7 @@ In your Twig templates you can split out the dev and prod assets like this:
   <!-- dev:bootstrap.css --><!-- endbuild -->
   <!-- dev:frontend.css --><!-- endbuild -->
 {% endif %}
+```
 
 ## How to replace Assetic
 
