@@ -198,7 +198,7 @@ Done.
 
 ## More docs
 
-- [Using gassetic with Symfony2](https://github.com/ollietb/gassetic/blob/master/Resources/doc/GasseticAndSymfony2.md)
+- [Using Gassetic with Symfony2](https://github.com/ollietb/gassetic/blob/master/Resources/doc/GasseticAndSymfony2.md)
 
 #### @todo:
 - better readme

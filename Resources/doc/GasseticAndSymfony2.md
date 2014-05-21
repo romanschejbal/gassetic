@@ -12,7 +12,7 @@ The majority of the configuration is in the gassetic.yml file. There are a numbe
 
 ## Working with Environments
 
-Gassetic can apply different filters depending on the environment. We can use this so that the files are still easy to debug in the dev environment and only minified in the prod environment.
+Gassetic can apply different filters depending on the environment, so that the files are still easy to debug in the dev environment and only minified in the prod environment.
 
 In your Twig templates you can split out the dev and prod assets like this:
 
@@ -30,7 +30,8 @@ In your Twig templates you can split out the dev and prod assets like this:
 
 Replacing Assetic is a relatively easy process
 
-1. Install your libraries via Bower
+#### 1 Install your libraries via [Bower](http://bower.io/)
+
 We install all our frontend assets to a folder called 'assets' in the root directory. You can install them to wherever you want.
 
 ```
@@ -38,9 +39,11 @@ bower search bootstrap
 bower install bootstrap
 ```
 
-2. Change your Assetic code blocks
-from:
-layout.html.twig
+#### 2 Change your Assetic code blocks
+
+Your old code:
+
+_layout.html.twig_
 ```twig
     {% javascripts
         '../vendor/twbs/bootstrap/js/bootstrap-transition.js'
@@ -59,8 +62,9 @@ layout.html.twig
     {% endjavascripts %}
 ```
 
-to:
-layout.html.twig
+Your new code:
+
+_layout.html.twig_
 ```twig
     {% if app.environment == 'prod' %}
         <!-- prod:bootstrap.js --><!-- endbuild -->
@@ -68,8 +72,8 @@ layout.html.twig
         <!-- dev:bootstrap.js --><!-- endbuild -->a
     {% endif %}
 ```
-gassetic.yml
 
+_gassetic.yml_
 ```yaml
 mimetypes:
     js:
@@ -105,12 +109,16 @@ mimetypes:
 				- vendor/lifo/typeahead-bundle/Lifo/TypeaheadBundle/Resources/public/js/typeaheadbundle.js
 ```
 
+#### 3. Run gulp
 
-3. Run gulp
+First build the dev environment
+
 ```
     gulp build --env=dev
 ```
-And gulp build for the prod environment
+
+And then gulp build for the prod environment
+
 ```
     gulp build --env=prod
 ```
@@ -140,3 +148,5 @@ The resulting output is:
 ```
 
 Because the dev environment keeps all your files separated, it makes it easy to debug individual scripts
+
+*We recommend adding web/tmp to your .gitignore so that your dev files are not committed*
