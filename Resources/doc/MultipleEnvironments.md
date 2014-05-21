@@ -72,8 +72,8 @@ mimetypes:
 # This is the list of files/paths to search and find the replacement tags to insert the
 # generated <script> or stylesheet tags
 replacementPaths:
-    - app/Resources/views/*.html.twig
-    - src/**/*.html.twig
+    - app/layouts/*.php
+    - web/**/*.html
 
 default:
     - js
