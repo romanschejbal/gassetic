@@ -29,16 +29,6 @@ Gassetic replaces "<!-- {env}:{filename} --><!-- endbuild -->" strings in your t
 mimetypes:
     # This section contains the formatters for the css files
     css:
-        # In 'dev' mode, use these settings
-        dev:
-            outputFolder: web/tmp/css  # The output files will be saved here
-                                       #   (Add the tmp folder to gitignore so that your
-                                       #   dev files aren't pushed to your repo)
-            webPath:      /tmp/css     # The path used for the frontend
-            # This is the list of tasks to run on the files
-            # You can add gulp 
-            tasks:
-                - { name: less }
         # In 'prod' mode, use these settings
         prod:
             outputFolder: web/compiled/css  # The output folder for your saving your compiled files
@@ -66,35 +56,10 @@ mimetypes:
         watch:
             - assets/**/*.less
             - assets/**/*.css
-            
-    # This section contains the settings for your coffee files (optional)
-    coffee:
-        dev:
-            outputFolder: assets/js/tmp
-            tasks:
-                - { name: coffee, args: { bare: true } }
-                - { name: concat, args: '%filename%' }
-        prod:
-            outputFolder: assets/js/tmp
-            tasks:
-                - { name: coffee, args: { bare: true } }
-                - { name: concat, args: '%filename%' }
-        files:
-            angularApp.js:
-                - assets/angular/*.coffee
-                - assets/angular/controllers/*.coffee
-                - assets/angular/directives/*.coffee
-                - assets/angular/services/*.coffee
+
 
     # This section contains the formatters for your JS files
     js:
-        # This ensures the other media types are formatted before this (optional)
-        deps:
-            - coffee
-        dev:
-            outputFolder: web/tmp/js       # Save the files here
-            webPath:      /tmp/js          # Specify the web path
-            tasks: []                      # Don't apply any tasks
         prod:
             outputFolder: web/compiled/js  # Save the files here
             webPath:      /compiled/js     # Specify the web path
@@ -116,8 +81,8 @@ mimetypes:
 # This is the list of files/paths to search and find the replacement tags to insert the
 # generated <script> or stylesheet tags
 replacementPaths:
-    - app/Resources/views/*.html.twig
-    - src/**/*.html.twig
+    - web/*.html
+    - includes/**/*.html
 
 default:
     - js
@@ -180,11 +145,7 @@ gulp.task('clean', function() {
 
 To:
 
-	{% if env == 'prod' %}
-		<!-- dev:frontend.css --><!--endbuild-->
-	{% else %}
-		<!-- prod:frontend.css --><!--endbuild-->
-	{% endif %}
+    <!-- prod:frontend.css --><!--endbuild-->
 
 The strings "<!-- {environment}:{filename} --><!-- endbuild -->" will be searched for in the 'replacementPaths' list in the settings and replaced with the generated tags and files
 
@@ -199,6 +160,8 @@ Done.
 ## More docs
 
 - [Using Gassetic with Symfony2](https://github.com/ollietb/gassetic/blob/master/Resources/doc/GasseticAndSymfony2.md)
+- [Advanced usage: Multiple environments] (https://github.com/ollietb/gassetic/blob/master/Resources/doc/MultipleEnvironments.md)
+- [Advanced usage: Managing dependencies](https://github.com/ollietb/gassetic/blob/master/Resources/doc/ManagingDependencies.md)
 
 #### @todo:
 - better readme
