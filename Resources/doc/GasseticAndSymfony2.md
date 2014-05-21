@@ -77,8 +77,6 @@ _gassetic.yml_
 ```yaml
 mimetypes:
     js:
-        deps:
-            - coffee
         dev:
             outputFolder: web/tmp/js
             webPath:      /tmp/js
@@ -149,4 +147,4 @@ The resulting output is:
 
 Because the dev environment keeps all your files separated, it makes it easy to debug individual scripts
 
-*We recommend adding web/tmp to your .gitignore so that your dev files are not committed*
+*We recommend adding web/tmp to your .gitignore so that your dev assets are not committed*
