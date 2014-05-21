@@ -196,6 +196,10 @@ The strings "<!-- {environment}:{filename} --><!-- endbuild -->" will be searche
 
 Done.
 
+## More docs
+
+- [Using gassetic with Symfony2](https://github.com/ollietb/gassetic/blob/master/Resources/doc/GasseticAndSymfony2.md)
+
 #### @todo:
 - better readme
 
