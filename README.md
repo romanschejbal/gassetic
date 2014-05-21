@@ -91,21 +91,25 @@ default:
 
 2) Create ```gulpfile.js```
 ```js
-var coffee, config, env, fs, gassetic, gulp, gutil, jsYaml, less, modules, yargs;
+var modules;
+
+// install all the modules you need with npm install $module --save
+modules = {};
+modules.concat = require("gulp-concat");
+modules.less = less = require("gulp-less");
+modules.minify = require("gulp-minify-css");
+modules.uglify = require("gulp-uglify");
+
+// you don't need to edit anything below this line ----------------------
+
+var config, env, fs, gassetic, gulp, gutil, jsYaml, less, modules, yargs;
+
 fs = require("fs");
 gulp = require("gulp");
 gutil = require("gulp-util");
 jsYaml = require("js-yaml");
 yargs = require("yargs");
 gassetic = require("gassetic");
-
-// install all the modules you need with npm install $module --save
-modules = {};
-modules.concat = require("gulp-concat");
-modules.coffee = coffee = require("gulp-coffee");
-modules.less = less = require("gulp-less");
-modules.minify = require("gulp-minify-css");
-modules.uglify = require("gulp-uglify");
 
 // load the config
 config = jsYaml.safeLoad(fs.readFileSync('gassetic.yml', 'utf8'));
