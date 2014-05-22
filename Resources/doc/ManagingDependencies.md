@@ -4,9 +4,9 @@ If you need some preprocessing of files (for example coffeescript) then you can 
 
 ```yml
 requires:
-    coffee: node_modules/gulp-coffee
-    concat: node_modules/gulp-concat
-    uglify: node_modules/gulp-uglify
+    coffee: gulp-coffee
+    concat: gulp-concat
+    uglify: gulp-uglify
 mimetypes:
     # This section contains the settings for your coffee files (optional)
     coffee:

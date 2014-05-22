@@ -27,10 +27,10 @@ Gassetic replaces ```"<!-- {env}:{filename} --><!-- endbuild -->"``` strings in 
 ### yaml example with gassetic.yml
 ```yml
 requires:
-    less: node_modules/gulp-less
-    minify: node_modules/gulp-minify-css
-    concat: node_modules/gulp-concat
-    uglify: node_modules/gulp-uglify
+    less: gulp-less
+    minify: gulp-minify-css
+    concat: gulp-concat
+    uglify: gulp-uglify
 mimetypes:
     # This section contains the formatters for the css files
     css:

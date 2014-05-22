@@ -4,11 +4,11 @@ Most of the time you want to have different scripts for development and producti
 
 ```yaml
 requires:
-    coffee: node_modules/gulp-coffee
-    concat: node_modules/gulp-concat
-    uglify: node_modules/gulp-uglify
-    minify: node_modules/gulp-minify
-    less:   node_modules/gulp-less
+    coffee: gulp-coffee
+    concat: gulp-concat
+    uglify: gulp-uglify
+    minify: gulp-minify
+    less:   gulp-less
 mimetypes:
     # This section contains the formatters for the css files
     css:

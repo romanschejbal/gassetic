@@ -54,7 +54,7 @@ module.exports = class Gassetic
 	includeModules: () ->
 		@modules = {}
 		for key, value of @config.requires
-			@modules[key] = require path.join @cwd(), value
+			@modules[key] = require value
 
 	###
 		@return {Object} mimetypes

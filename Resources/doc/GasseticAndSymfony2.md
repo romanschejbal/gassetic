@@ -80,9 +80,9 @@ _layout.html.twig_
 _gassetic.yml_
 ```yaml
 requires:
-    concat: node_modules/gulp-concat
-    uglify: node_modules/gulp-uglify
-    freeze: node_modules/gulp-freeze
+    concat: gulp-concat
+    uglify: gulp-uglify
+    freeze: gulp-freeze
 mimetypes:
     css:
         # Your CSS settings here...
