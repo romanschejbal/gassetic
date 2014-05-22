@@ -53,6 +53,8 @@ module.exports = class Gassetic
 
 	includeModules: () ->
 		@modules = {}
+		module.paths.unshift path.join @cwd(), 'node_modules'
+		module.paths.unshift @cwd()
 		for key, value of @config.requires
 			@modules[key] = require value
 
