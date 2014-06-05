@@ -96,12 +96,15 @@ module.exports = class Gassetic
 	###
 		Builds all
 	###
-	build: () ->
+	build: (type = null) ->
 		@replaces = {}
 		@watchFiles = []
 		finalPromise = q.defer()
 		promises = []
-		for type in @getDefaultTypes()
+		if type == null
+			for type in @getDefaultTypes()
+				promises.push @buildType type
+		else
 			promises.push @buildType type
 		done = q.all promises
 		done.then =>
@@ -189,7 +192,7 @@ module.exports = class Gassetic
 				for filename in replacements[type][one]
 					scripts += @buildScriptString(type, filename) + '\n'
 				regexs.push
-					pattern: new RegExp('<!-- ' + @env + ':' + one + " -->([\\s\\S]*?)<!-- endbuild -->", "ig")
+					pattern: new RegExp("<!-- " + @env + ':' + one + " -->([\\s\\S]*?)<!-- endbuild -->", "ig")
 					replacement: "<!-- " + @env + ":" + one + " -->" + scripts + "<!-- endbuild -->"
 
 		allfiles = []
