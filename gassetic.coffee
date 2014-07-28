@@ -12,8 +12,8 @@ jsYaml = require 'js-yaml'
 module.exports = class Gassetic
 	constructor: (@env, @log = true) ->
 		@loadConfig()
-		@validateConfig()
 		@includeModules()
+		@validateConfig()
 
 	###
 		self explanatory
@@ -37,7 +37,7 @@ module.exports = class Gassetic
 			for task in @getMimetypes()[key][@env].tasks
 				if !task.name
 					throw 'invalid task "' + task.toString() + '" for ' + key + ' in ' + @env + ' environment, the structure must be like is {name: coffee, args: { bare: true }}'
-				if !@config.requires or @config.requires[task.name] == undefined
+				if !@config.requires or @getModuleMethod(@modules, task.name) == undefined
 					throw 'undefined task ' + task.name
 			if !@getMimetypes()[key].files?
 				throw 'missing file list for ' + key + ' mimetype'
@@ -84,9 +84,8 @@ module.exports = class Gassetic
 			@getDestinationPathsForType type
 				.map (f) ->
 					files.push f
-		gulp.src(files, read: false).pipe(clean(force: true))
-			.on 'end', ->
-				result.resolve true
+		gulp.src(files, read: false).pipe(clean(force: true)).on 'end', ->
+			result.resolve true
 		result.promise
 
 	getDestinationPathsForType: (type) ->
@@ -151,7 +150,7 @@ module.exports = class Gassetic
 					result.resolve true
 		return result.promise
 
-	###
+	###*
 	###
 	buildFiles: (type, destinationFilenameConfigKey) ->
 		@replaces[type][destinationFilenameConfigKey] = []
@@ -162,17 +161,17 @@ module.exports = class Gassetic
 		destination = path.join @getMimetypes()[type][@env].outputFolder, destinationFilenameConfigKey
 		pipe = gulp.src sourceFiles
 		tasks.map (t) =>
-			if !@modules[t.name]?
-				throw 'calling ' + t.name + ' task but it has not been defined, add it into the requires array'
+			if !@getModuleMethod(@modules, t.name)?
+				gutil.log gutil.colors.red 'calling ' + t.name + ' task but it has not been defined, add it into the requires array'
 			if t.args?
 				if typeof t.args == 'string' or typeof t.args == 'number' or (typeof t.args == 'object' and t.args.length == undefined)
-					pipe = pipe.pipe @modules[t.name] [@replaceArgs(t.args, destinationFilenameConfigKey)]...
+					pipe = pipe.pipe @getModuleMethod(@modules, t.name) [@replaceArgs(t.args, destinationFilenameConfigKey)]...
 				else
-					pipe = pipe.pipe @modules[t.name] @replaceArgs(t.args, destinationFilenameConfigKey)...
+					pipe = pipe.pipe @getModuleMethod(@modules, t.name) @replaceArgs(t.args, destinationFilenameConfigKey)...
 			else if t.callback?
-				pipe = pipe.pipe @modules[t.name] [@modules[t.callback]]...
+				pipe = pipe.pipe @getModuleMethod(@modules, t.name) [@modules[t.callback]]...
 			else
-				pipe = pipe.pipe @modules[t.name].call @
+				pipe = pipe.pipe @getModuleMethod(@modules, t.name).call @
 		pipe = pipe.pipe gulp.dest destination
 			.pipe tap (f) =>
 				if @getMimetypes()[type][@env].webPath
@@ -183,6 +182,12 @@ module.exports = class Gassetic
 			.on 'end', ->
 				result.resolve true
 		return result.promise
+
+	getModuleMethod: (module, taskName) ->
+		levels = taskName.split '.'
+		while levels.length > 0
+			module = module[levels.shift()]
+		module
 
 	replaceArgs: (args, filename) ->
 		string = JSON.stringify args

@@ -1,13 +1,18 @@
 requires:
     coffee: gulp-coffee
     concat: gulp-concat
+    sourcemaps: gulp-sourcemaps
+    plumber: gulp-plumber
 mimetypes:
     css:
         dev:
             outputFolder: "./test/dest"
             webPath: "/web"
             tasks:
+                - { name: "plumber" }
+                - { name: "sourcemaps.init" }
                 - { name: "concat", args: "%filename%" }
+                - { name: sourcemaps.write, args: "./test/dest" }
             htmlTag: "<script type='text/javascript' src='{{ asset('%path%') }}'></script>"
         files:
             concated.css:

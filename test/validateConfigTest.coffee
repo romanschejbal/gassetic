@@ -77,6 +77,7 @@ suite 'Config', ->
 						}
 					}
 				}, default: []}
+			gassetic.includeModules()
 			gassetic.validateConfig()
 		catch e
 			assert.equal e, 'missing file list for css mimetype'
@@ -97,6 +98,7 @@ suite 'Config', ->
 						files: [ 'file' ]
 					}
 				}, default: ['css']}
+			gassetic.includeModules()
 			gassetic.validateConfig()
 		catch e
 			assert.equal e, 'wrong file list for css mimetype'
@@ -117,6 +119,7 @@ suite 'Config', ->
 						files: {}
 					}
 				}, default: ['css']}
+			gassetic.includeModules()
 			gassetic.validateConfig()
 		catch e
 			assert.equal e, 'missing outputFolder path in css dev'

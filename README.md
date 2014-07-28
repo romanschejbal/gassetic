@@ -5,7 +5,7 @@
 Gassetic is an [Assetic] (https://github.com/kriswallsmith/assetic) replacement which is based on the gulp build tool for more comfortable frontend development and dependency management
 
 ## Advantages over assetic
-- CSS live reload (injects modified css files into page without refreshing page)
+- Uses CSS [live reload](https://chrome.google.com/webstore/detail/livereload/jnihajbhpnppcggbcgedagnkighmdlei) (injects modified css files into page without refreshing page)
 - Easy to setup
 - Use a package manager like [Bower](http://bower.io/) for JS dependencies
 - Use the [gulp.js](http://gulpjs.com/) ecosystem to build your frontend assets
