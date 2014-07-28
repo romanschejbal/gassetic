@@ -66,12 +66,16 @@ suite 'Config', ->
 	test 'should throw error about missing file list for mimetype', (done) ->
 		try
 			gassetic = new Gassetic 'dev'
-			gassetic.config = {mimetypes: {
-				css: {
-					dev: {
-						tasks: [{name: 'less'}]
+			gassetic.config = {
+				requires: {
+					less: 'gulp-less'
+				},
+				mimetypes: {
+					css: {
+						dev: {
+							tasks: [{name: 'less'}]
+						}
 					}
-				}
 				}, default: []}
 			gassetic.validateConfig()
 		catch e
@@ -81,13 +85,17 @@ suite 'Config', ->
 	test 'should throw error about wrong file list for mimetype', (done) ->
 		try
 			gassetic = new Gassetic 'dev'
-			gassetic.config = {mimetypes: {
-				css: {
-					dev: {
-						tasks: [{name: 'less'}]
+			gassetic.config = {
+				requires: {
+					less: 'gulp-less'
+				},
+				mimetypes: {
+					css: {
+						dev: {
+							tasks: [{name: 'less'}]
+						}
+						files: [ 'file' ]
 					}
-					files: [ 'file' ]
-				}
 				}, default: ['css']}
 			gassetic.validateConfig()
 		catch e
@@ -97,13 +105,17 @@ suite 'Config', ->
 	test 'should throw error about missing outputFolder', (done) ->
 		try
 			gassetic = new Gassetic 'dev'
-			gassetic.config = {mimetypes: {
-				css: {
-					dev: {
-						tasks: [{name: 'less'}]
-					}
-					files: {}
+			gassetic.config = {
+				requires: {
+					less: 'gulp-less',
 				}
+				mimetypes: {
+					css: {
+						dev: {
+							tasks: [{name: 'less'}]
+						}
+						files: {}
+					}
 				}, default: ['css']}
 			gassetic.validateConfig()
 		catch e
@@ -114,6 +126,8 @@ suite 'Config', ->
 		try
 			gassetic = new Gassetic 'dev'
 			gassetic.config =
+				requires:
+					less: 'gulp-less'
 				mimetypes:
 					css:
 						dev:
@@ -124,3 +138,21 @@ suite 'Config', ->
 			gassetic.validateConfig()
 			done()
 		catch e
+
+	test 'missing module concate', (done) ->
+		try
+			gassetic = new Gassetic 'dev'
+			gassetic.config =
+				requires:
+					concat: 'gulp-concat'
+				mimetypes:
+					css:
+						dev:
+							outputFolder: ''
+							tasks: [{ name: 'concate' }]
+						files: {}
+				default: ['css']
+			gassetic.validateConfig()
+		catch e
+			assert.equal e, 'undefined task concate'
+			done()

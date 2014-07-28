@@ -37,6 +37,8 @@ module.exports = class Gassetic
 			for task in @getMimetypes()[key][@env].tasks
 				if !task.name
 					throw 'invalid task "' + task.toString() + '" for ' + key + ' in ' + @env + ' environment, the structure must be like is {name: coffee, args: { bare: true }}'
+				if !@config.requires or @config.requires[task.name] == undefined
+					throw 'undefined task ' + task.name
 			if !@getMimetypes()[key].files?
 				throw 'missing file list for ' + key + ' mimetype'
 
@@ -163,7 +165,10 @@ module.exports = class Gassetic
 			if !@modules[t.name]?
 				throw 'calling ' + t.name + ' task but it has not been defined, add it into the requires array'
 			if t.args?
-				pipe = pipe.pipe @modules[t.name] [@replaceArgs(t.args, destinationFilenameConfigKey)]...
+				if typeof t.args == 'string' or typeof t.args == 'number' or (typeof t.args == 'object' and t.args.length == undefined)
+					pipe = pipe.pipe @modules[t.name] [@replaceArgs(t.args, destinationFilenameConfigKey)]...
+				else
+					pipe = pipe.pipe @modules[t.name] @replaceArgs(t.args, destinationFilenameConfigKey)...
 			else if t.callback?
 				pipe = pipe.pipe @modules[t.name] [@modules[t.callback]]...
 			else

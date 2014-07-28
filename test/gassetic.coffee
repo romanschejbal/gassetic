@@ -8,6 +8,9 @@ suite 'Gassetic', ->
 	setup (done) ->
 		Gassetic = require '../gassetic'
 		config =
+			requires:
+				concat: 'gulp-concat'
+				coffee: 'gulp-coffee'
 			mimetypes:
 				css:
 					dev:
