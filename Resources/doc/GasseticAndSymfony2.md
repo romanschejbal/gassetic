@@ -115,6 +115,9 @@ mimetypes:
                 - assets/vendor/bootstrap/js/transition.js
                 - vendor/mopa/bootstrap-bundle/Mopa/Bundle/BootstrapBundle/Resources/public/js/mopabootstrap-collection.js
 				- vendor/lifo/typeahead-bundle/Lifo/TypeaheadBundle/Resources/public/js/typeaheadbundle.js
+				
+replacementPaths:
+    - src/**/*.html.twig
 ```
 
 #### 3. Run gulp
