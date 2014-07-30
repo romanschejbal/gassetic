@@ -2,6 +2,7 @@ clean = require 'gulp-clean'
 frep = require "gulp-frep"
 gulp = require "gulp"
 gutil = require "gulp-util"
+rename = require 'gulp-rename'
 livereload = require "gulp-livereload"
 path = require "path"
 tap = require 'gulp-tap'
@@ -160,6 +161,11 @@ module.exports = class Gassetic
 		sourceFiles = @getMimetypes()[type].files[destinationFilenameConfigKey]
 		destination = path.join @getMimetypes()[type][@env].outputFolder, destinationFilenameConfigKey
 		pipe = gulp.src sourceFiles
+		if @isDev()
+			i = 0
+			pipe = pipe.pipe rename (path) ->
+				path.basename += '_' + i++
+				path
 		tasks.map (t) =>
 			if !@getModuleMethod(@modules, t.name)?
 				gutil.log gutil.colors.red 'calling ' + t.name + ' task but it has not been defined, add it into the requires array'
@@ -292,3 +298,6 @@ module.exports = class Gassetic
 						destFiles.push f
 				for f in destFiles
 					@buildFiles type, f
+
+	isDev: () ->
+		@env == 'dev'

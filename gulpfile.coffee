@@ -11,7 +11,7 @@ reporter = 'dot'
 
 gulp.task 'default', ['test'], ->
 	#reporter = 'min'
-	gulp.watch ['index.coffee', 'test/*.coffee'], ['test'], ->
+	gulp.watch ['index.coffee', 'test/*.coffee', 'gassetic.coffee'], ['test'], ->
 		gutil.log '...'
 
 gulp.task 'test', () ->
