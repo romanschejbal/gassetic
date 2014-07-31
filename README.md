@@ -2,7 +2,7 @@
 
 
 ## Summary
-Gassetic is an [Assetic] (https://github.com/kriswallsmith/assetic) replacement which is based on the gulp build tool for more comfortable frontend development and dependency management
+Gassetic is an [Assetic](https://github.com/kriswallsmith/assetic) replacement which is based on the gulp build tool for more comfortable frontend development and dependency management
 
 ## Advantages over assetic
 - Uses CSS [live reload](https://chrome.google.com/webstore/detail/livereload/jnihajbhpnppcggbcgedagnkighmdlei) (injects modified css files into page without refreshing page)

@@ -4,6 +4,7 @@ gulp = require "gulp"
 gutil = require "gulp-util"
 rename = require 'gulp-rename'
 livereload = require "gulp-livereload"
+git = require 'gulp-git'
 path = require "path"
 tap = require 'gulp-tap'
 q = require 'q'
@@ -101,6 +102,7 @@ module.exports = class Gassetic
 	build: (type = null) ->
 		@replaces = {}
 		@watchFiles = []
+		@gitAdd = []
 		finalPromise = q.defer()
 		promises = []
 		if type == null
@@ -185,6 +187,8 @@ module.exports = class Gassetic
 					webPath = path.join @getMimetypes()[type][@env].webPath, webPath
 					@replaces[type][destinationFilenameConfigKey].push webPath
 				@watchFiles.push f.path
+				if @getMimetypes()[type][@env].autoGitAdd
+					@gitAdd.push f.path
 			.on 'end', ->
 				result.resolve true
 		return result.promise
@@ -213,23 +217,28 @@ module.exports = class Gassetic
 
 		allfiles = []
 		progress = []
+		i = 0
 		# find the templates first
 		gulp.src @config.replacementPaths, read: false
-			.pipe tap (file) ->
+			.pipe tap (file) =>
 				allfiles.push file.path
-			.on 'end', ->
+				if @config.autoGitAdd
+					@gitAdd.push file.path
+			.on 'end', =>
 				# do the replace
 				for file in allfiles
 					result = q.defer()
 					progress.push result.promise
-					((file, deferred) ->
-						gulp.src file
+					((file, deferred) =>
+						pipe = gulp.src file
 							.pipe frep regexs
 							.pipe gulp.dest path.dirname file
-								.on 'end', ->
-									deferred.resolve true
+							.on 'end', =>
+								deferred.resolve true
 					) file, result
-
+				if @gitAdd.length > 0
+					gulp.src @gitAdd
+						.pipe git.add()
 		return q.all progress
 
 	buildScriptString: (type, fileWebPath) ->
