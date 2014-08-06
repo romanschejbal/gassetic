@@ -35,6 +35,18 @@ suite 'Gassetic', ->
 							'./test/src/coffee/**/*.coffee'
 						]
 					}
+				coffee2:
+					dev:
+						outputFolder: './test/dest'
+						tasks: [
+							{ name: 'coffee', args: { bare: true } }
+						]
+						autoRenaming: false
+					files: {
+						'coffee2.js': [
+							'./test/src/coffee/**/*.coffee'
+						]
+					}
 				js:
 					deps: ['coffee']
 					dev:
@@ -49,7 +61,7 @@ suite 'Gassetic', ->
 							'./test/dest/coffee.js/**/*.js'
 						]
 					}
-			default: ['css', 'js']
+			default: ['css', 'js', 'coffee2']
 			replacementPaths: [
 				'./test/templates/**/*.html'
 			]

@@ -163,7 +163,7 @@ module.exports = class Gassetic
 		sourceFiles = @getMimetypes()[type].files[destinationFilenameConfigKey]
 		destination = path.join @getMimetypes()[type][@env].outputFolder, destinationFilenameConfigKey
 		pipe = gulp.src sourceFiles
-		if @isDev()
+		if @isDev() and (@getMimetypes()[type][@env].autoRenaming == undefined or @getMimetypes()[type][@env].autoRenaming == true)
 			i = 0
 			pipe = pipe.pipe rename (path) ->
 				path.basename += '_' + i++
