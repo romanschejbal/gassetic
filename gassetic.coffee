@@ -12,7 +12,7 @@ fs = require 'fs'
 jsYaml = require 'js-yaml'
 
 module.exports = class Gassetic
-	constructor: (@env, @log = true) ->
+	constructor: (@env, @server, @log = true) ->
 		@loadConfig()
 		@includeModules()
 		@validateConfig()
@@ -272,7 +272,7 @@ module.exports = class Gassetic
 		deps
 
 	watch: () ->
-		server = livereload()
+		server = livereload(@server)
 
 		toWatch = []
 		for type in @getDefaultTypes()
