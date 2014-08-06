@@ -2,9 +2,9 @@ gassetic = require './gassetic'
 yargs = require 'yargs'
 
 env = yargs.argv.env || 'dev'
-server = yargs.argv.server
+port = yargs.argv.port || undefined
 
-gassetic = new gassetic env,server
+gassetic = new gassetic env, port
 return gassetic.clean().then ->
 	unless yargs.argv._[0] == 'clean'
 		if yargs.argv._[1]?
