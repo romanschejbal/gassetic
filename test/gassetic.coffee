@@ -66,7 +66,7 @@ suite 'Gassetic', ->
 				'./test/templates/**/*.html'
 			]
 
-		ga = new Gassetic 'dev', false
+		ga = new Gassetic 'dev', undefined, false
 		ga.config = config
 		ga.validateConfig()
 		done()

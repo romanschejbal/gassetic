@@ -272,13 +272,13 @@ module.exports = class Gassetic
 		deps
 
 	watch: () ->
-		port = @port || @config.livereload.port
-		lrParams = @config.livereload.options
+		port = @port || @config.livereload?.port
+		lrParams = @config.livereload?.options
 		if lrParams
 			if lrParams.cert && lrParams.key
 				lrParams.key = fs.readFileSync lrParams.key
 				lrParams.cert = fs.readFileSync lrParams.cert
-			server = livereload port,lrParams
+			server = livereload port, lrParams
 		else
 			server = livereload port
 
