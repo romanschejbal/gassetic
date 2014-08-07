@@ -272,7 +272,15 @@ module.exports = class Gassetic
 		deps
 
 	watch: () ->
-		server = livereload @port
+		port = @port || @config.livereload.port
+		lrParams = @config.livereload.options
+		if lrParams
+			if lrParams.cert && lrParams.key
+				lrParams.key = fs.readFileSync lrParams.key
+				lrParams.cert = fs.readFileSync lrParams.cert
+			server = livereload port,lrParams
+		else
+			server = livereload port
 
 		toWatch = []
 		for type in @getDefaultTypes()
@@ -293,7 +301,7 @@ module.exports = class Gassetic
 			.on 'change', (e) =>
 				gutil.log gutil.colors.yellow new Date() if @log
 				gutil.log gutil.colors.blue e.path if @log
-				server.changed e.path
+				server.changed e
 
 	watchSources: (sources, type, destinationFile = '*') ->
 		gutil.log 'Watching', gutil.colors.cyan(sources.length), gutil.colors.magenta(type), 'paths for', gutil.colors.green(destinationFile), '...' if @log
