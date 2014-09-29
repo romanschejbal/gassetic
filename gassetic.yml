@@ -3,8 +3,11 @@ requires:
     concat: gulp-concat
     sourcemaps: gulp-sourcemaps
     plumber: gulp-plumber
+    sass: gulp-sass
 mimetypes:
     css:
+        deps:
+            - "sass"
         dev:
             outputFolder: "./test/dest"
             webPath: "/web"
@@ -17,6 +20,16 @@ mimetypes:
         files:
             concated.css:
                 - "./test/src/css/**/*.css"
+    sass:
+        dev:
+            outputFolder: "./test/dest"
+            webPath: "/web"
+            tasks:
+                - { name: "plumber" }
+                - { name: "sass" }
+        files:
+            build.css:
+                - "./test/src/sass/test1.scss"
     coffee:
         dev:
             outputFolder: "./test/dest"
@@ -37,6 +50,8 @@ mimetypes:
             js.js:
                 - "./test/src/js/**/*.js"
                 - "./test/dest/coffee.js/**/*.js"
+            test.js:
+                - "./test/src/test/some.js"
 default:
     - css
     - js

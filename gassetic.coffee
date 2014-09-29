@@ -5,6 +5,7 @@ gutil = require "gulp-util"
 rename = require 'gulp-rename'
 livereload = require "gulp-livereload"
 git = require 'gulp-git'
+expect = require 'gulp-expect-file'
 path = require "path"
 tap = require 'gulp-tap'
 q = require 'q'
@@ -163,6 +164,7 @@ module.exports = class Gassetic
 		sourceFiles = @getMimetypes()[type].files[destinationFilenameConfigKey]
 		destination = path.join @getMimetypes()[type][@env].outputFolder, destinationFilenameConfigKey
 		pipe = gulp.src sourceFiles
+		pipe = pipe.pipe expect {errorOnFailure: true}, sourceFiles
 		if @isDev() and (@getMimetypes()[type][@env].autoRenaming == undefined or @getMimetypes()[type][@env].autoRenaming == true)
 			i = 0
 			pipe = pipe.pipe rename (path) ->
