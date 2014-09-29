@@ -19,7 +19,7 @@ mimetypes:
             htmlTag: "<script type='text/javascript' src='{{ asset('%path%') }}'></script>"
         files:
             concated.css:
-                - "./test/src/css/**/*.css"
+                - "test/src/css/**/*.css"
     sass:
         dev:
             outputFolder: "./test/dest"
@@ -29,7 +29,8 @@ mimetypes:
                 - { name: "sass" }
         files:
             build.css:
-                - "./test/src/sass/test1.scss"
+                - "test/src/sass/test1.scss"
+                - "test/src/sass/test10.scss"
     coffee:
         dev:
             outputFolder: "./test/dest"
@@ -37,7 +38,7 @@ mimetypes:
                 - { name: "coffee", args: { bare: true } }
         files:
             coffee.js:
-                - "./test/src/coffee/**/*.coffee"
+                - "test/src/coffee/**/*.coffee"
     js:
         deps:
             - "coffee"
@@ -48,10 +49,10 @@ mimetypes:
                 - { name: "concat", args: "%filename%" }
         files:
             js.js:
-                - "./test/src/js/**/*.js"
-                - "./test/dest/coffee.js/**/*.js"
+                - "test/src/js/**/*.js"
+                - "test/dest/coffee.js/**/*.js"
             test.js:
-                - "./test/src/test/some.js"
+                - "test/src/test/some.js"
 default:
     - css
     - js
