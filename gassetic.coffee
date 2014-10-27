@@ -218,6 +218,9 @@ module.exports = class Gassetic
 				regexs.push
 					pattern: new RegExp("<!-- " + @env + ':' + one + " -->([\\s\\S]*?)<!-- endbuild -->", "ig")
 					replacement: "<!-- " + @env + ":" + one + " -->" + scripts + "<!-- endbuild -->"
+				regexs.push
+					pattern: new RegExp("<!-- " + '\\*' + ':' + one + " -->([\\s\\S]*?)<!-- endbuild -->", "ig")
+					replacement: "<!-- " + '*' + ":" + one + " -->" + scripts + "<!-- endbuild -->"
 
 		allfiles = []
 		progress = []
