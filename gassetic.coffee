@@ -21,13 +21,13 @@ module.exports = class Gassetic
 	###
 		self explanatory
 	###
-	loadConfig: () ->
+	loadConfig: ->
 		@config = jsYaml.safeLoad fs.readFileSync 'gassetic.yml', 'utf8'
 
 	###
 		self explanatory
 	###
-	validateConfig: () ->
+	validateConfig: ->
 		if !@getMimetypes()?
 			throw 'missing mimetypes in config'
 		if !@getDefaultTypes()?
@@ -56,7 +56,7 @@ module.exports = class Gassetic
 			if !@getMimetypes()[key][@env].outputFolder?
 				throw 'missing outputFolder path in ' + key + ' ' + @env
 
-	includeModules: () ->
+	includeModules: ->
 		@modules = {}
 		module.paths.unshift path.join @cwd(), 'node_modules'
 		module.paths.unshift @cwd()
@@ -66,13 +66,13 @@ module.exports = class Gassetic
 	###
 		@return {Object} mimetypes
 	###
-	getMimetypes: () ->
+	getMimetypes: ->
 		@config.mimetypes
 
 	###
 		@return {Array} default tasks
 	###
-	getDefaultTypes: () ->
+	getDefaultTypes: ->
 		@config.default
 
 	###
@@ -80,7 +80,7 @@ module.exports = class Gassetic
 	getSourceFilesForType: (type) ->
 		@getMimetypes()[type].files
 
-	clean: () ->
+	clean: ->
 		result = q.defer()
 		files = []
 		for type of @getMimetypes()
@@ -90,6 +90,14 @@ module.exports = class Gassetic
 		gulp.src(files, read: false).pipe(clean(force: true)).on 'end', ->
 			result.resolve true
 		result.promise
+
+	clear: ->
+		replaces = {}
+		for type of @getMimetypes()
+			replaces[type] = {}
+			for source of @getSourceFilesForType type
+				replaces[type][source] = []
+		@replaceInFiles replaces
 
 	getDestinationPathsForType: (type) ->
 		paths = []
@@ -118,7 +126,7 @@ module.exports = class Gassetic
 					finalPromise.resolve true
 		finalPromise.promise
 
-	cwd: () ->
+	cwd: ->
 		process.cwd()
 
 	###
@@ -144,13 +152,13 @@ module.exports = class Gassetic
 				next = deps.shift()
 				all.push @buildType next
 			q.all all
-				.then () =>
+				.then =>
 					buildOne.call @, type
-						.then () ->
+						.then ->
 							result.resolve true
 		else
 			buildOne.call @, type
-				.then () ->
+				.then ->
 					result.resolve true
 		return result.promise
 
@@ -230,7 +238,7 @@ module.exports = class Gassetic
 			.pipe tap (file) =>
 				allfiles.push file.path
 				if @config.autoGitAdd
-					@gitAdd.push file.path
+					@gitAdd?.push file.path
 			.on 'end', =>
 				# do the replace
 				for file in allfiles
@@ -243,7 +251,7 @@ module.exports = class Gassetic
 							.on 'end', =>
 								deferred.resolve true
 					) file, result
-				if @gitAdd.length > 0
+				if @gitAdd?.length > 0
 					gulp.src @gitAdd
 						.pipe git.add()
 		return q.all progress
@@ -278,7 +286,7 @@ module.exports = class Gassetic
 					deps = deps.concat @findDependentTypes d
 		deps
 
-	watch: () ->
+	watch: ->
 		port = @port || @config.livereload?.port
 		lrParams = @config.livereload?.options
 		if lrParams
@@ -323,5 +331,5 @@ module.exports = class Gassetic
 				for f in destFiles
 					@buildFiles type, f
 
-	isDev: () ->
+	isDev: ->
 		@env == 'dev'
