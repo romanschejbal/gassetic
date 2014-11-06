@@ -314,8 +314,6 @@ module.exports = class Gassetic
 
 		gulp.watch @watchFiles
 			.on 'change', (e) =>
-				gutil.log gutil.colors.yellow new Date() if @log
-				gutil.log gutil.colors.blue e.path if @log
 				server.changed e
 
 	watchSources: (sources, type, destinationFile = '*') ->
