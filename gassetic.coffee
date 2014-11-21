@@ -293,9 +293,9 @@ module.exports = class Gassetic
 			if lrParams.cert && lrParams.key
 				lrParams.key = fs.readFileSync lrParams.key
 				lrParams.cert = fs.readFileSync lrParams.cert
-			server = livereload port, lrParams
+			server = livereload.listen port, lrParams
 		else
-			server = livereload port
+			server = livereload.listen port
 
 		toWatch = []
 		for type in @getDefaultTypes()
@@ -314,7 +314,7 @@ module.exports = class Gassetic
 
 		gulp.watch @watchFiles
 			.on 'change', (e) =>
-				server.changed e
+				livereload.changed e
 
 	watchSources: (sources, type, destinationFile = '*') ->
 		gutil.log 'Watching', gutil.colors.cyan(sources.length), gutil.colors.magenta(type), 'paths for', gutil.colors.green(destinationFile), '...' if @log
