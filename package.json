@@ -1,6 +1,6 @@
 {
   "name": "gassetic",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Symfony2 Assetic replacement based on the gulp build tool",
   "main": "index.js",
   "scripts": {
@@ -35,19 +35,19 @@
     "gulp-sass": "^0.7.2"
   },
   "dependencies": {
-    "coffee-script": "~1.7.1",
+    "coffee-script": "^1.7.1",
     "gulp": "^3.8.6",
-    "gulp-clean": "0.2.4",
-    "gulp-coffee": "~1.4.2",
+    "gulp-clean": "^0.2.4",
+    "gulp-coffee": "^1.4.3",
     "gulp-expect-file": "0.0.7",
     "gulp-frep": "~0.1.1",
     "gulp-git": "^0.5.0",
     "gulp-livereload": "^2.1.1",
     "gulp-rename": "^1.2.0",
     "gulp-tap": "~0.1.1",
-    "gulp-util": "~2.2.14",
-    "js-yaml": "~3.0.2",
-    "q": "~1.0.1",
-    "yargs": "~1.2.2"
+    "gulp-util": "^2.2.20",
+    "js-yaml": "^3.0.2",
+    "q": "^1.0.1",
+    "yargs": "^1.2.6"
   }
 }
