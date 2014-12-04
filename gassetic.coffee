@@ -13,8 +13,8 @@ fs = require 'fs'
 jsYaml = require 'js-yaml'
 
 module.exports = class Gassetic
-	constructor: (@env, @port, @log = true) ->
-		@loadConfig()
+	constructor: (@env, @port, @configEnv, @log = true) ->
+		@loadConfig(@configEnv)
 		@includeModules()
 		@validateConfig()
 
@@ -22,7 +22,11 @@ module.exports = class Gassetic
 		self explanatory
 	###
 	loadConfig: ->
-		@config = jsYaml.safeLoad fs.readFileSync 'gassetic.yml', 'utf8'
+		if(@configEnv)
+			@config = jsYaml.safeLoad fs.readFileSync 'gassetic-' + configEnv + '.yml', 'utf8'
+		else
+			@config = jsYaml.safeLoad fs.readFileSync 'gassetic.yml', 'utf8'
+
 
 	###
 		self explanatory
