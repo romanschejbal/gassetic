@@ -27,7 +27,6 @@ module.exports = class Gassetic
 		else
 			@config = jsYaml.safeLoad fs.readFileSync 'gassetic.yml', 'utf8'
 
-
 	###
 		self explanatory
 	###
@@ -226,7 +225,7 @@ module.exports = class Gassetic
 			for one of replacements[type]
 				scripts = '\n'
 				for filename in replacements[type][one]
-					scripts += @buildScriptString(type, filename) + '\n'
+					scripts += @buildScriptString(type, filename, one) + '\n'
 				regexs.push
 					pattern: new RegExp("<!-- " + @env + ':' + one + " -->([\\s\\S]*?)<!-- endbuild -->", "ig")
 					replacement: "<!-- " + @env + ":" + one + " -->" + scripts + "<!-- endbuild -->"
@@ -260,10 +259,13 @@ module.exports = class Gassetic
 						.pipe git.add()
 		return q.all progress
 
-	buildScriptString: (type, fileWebPath) ->
+	buildScriptString: (type, fileWebPath, fileName) ->
 		fileWebPath = fileWebPath.replace /\\/g, '/' # windows workaround
 		if @getMimetypes()[type][@env].htmlTag?
-			return @getMimetypes()[type][@env].htmlTag.replace /%path%/g, fileWebPath
+			htmlTag = @getMimetypes()[type][@env].htmlTag.replace /%path%/g, fileWebPath
+			htmlTag = htmlTag.replace /%filename%/g, fileName
+
+			return htmlTag
 		else
 			ext = path.extname fileWebPath
 			switch ext
