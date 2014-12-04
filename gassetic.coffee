@@ -21,7 +21,7 @@ module.exports = class Gassetic
 	###
 		self explanatory
 	###
-	loadConfig: ->
+	loadConfig: (@configEnv) ->
 		if(@configEnv)
 			@config = jsYaml.safeLoad fs.readFileSync 'gassetic-' + configEnv + '.yml', 'utf8'
 		else
