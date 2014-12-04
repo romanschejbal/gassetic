@@ -225,7 +225,7 @@ module.exports = class Gassetic
 			for one of replacements[type]
 				scripts = '\n'
 				for filename in replacements[type][one]
-					scripts += @buildScriptString(type, filename) + '\n'
+					scripts += @buildScriptString(type, filename, one) + '\n'
 				regexs.push
 					pattern: new RegExp("<!-- " + @env + ':' + one + " -->([\\s\\S]*?)<!-- endbuild -->", "ig")
 					replacement: "<!-- " + @env + ":" + one + " -->" + scripts + "<!-- endbuild -->"
@@ -259,10 +259,11 @@ module.exports = class Gassetic
 						.pipe git.add()
 		return q.all progress
 
-	buildScriptString: (type, fileWebPath) ->
+	buildScriptString: (type, fileWebPath, originalOutputFileName) ->
 		fileWebPath = fileWebPath.replace /\\/g, '/' # windows workaround
 		if @getMimetypes()[type][@env].htmlTag?
 			htmlTag = @getMimetypes()[type][@env].htmlTag.replace /%path%/g, fileWebPath
+			htmlTag = htmlTag.replace /%originalfilename%/g, originalOutputFileName
 			lastSlashInd = fileWebPath.lastIndexOf('/')
 			if(lastSlashInd >= 0)
 				fileName = fileWebPath.substring(lastSlashInd + 1)
