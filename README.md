@@ -108,7 +108,7 @@ default:
 
 To:
 
-    <!-- prod:frontend.css --><!--endbuild-->
+    <!-- prod:frontend.css --><!-- endbuild -->
 
 The strings "<!-- {environment}:{filename} --><!-- endbuild -->" will be searched for in the 'replacementPaths' list in the settings and replaced with the generated tags and files
 
