@@ -43,7 +43,7 @@ mimetypes:
                 - { name: less }
                 - { name: minify }
                 - { name: concat, args: '%filename%' }
-            htmlTag: '<script type="text/javascript" src="{{ asset("%path%") }}"></script>' # custom html tag
+            htmlTag: '<link rel="stylesheet" type="text/css" href="{{ asset("%path%") }}">' # custom html tag
 
         # This is the list of source files to apply the above settings
         files:
