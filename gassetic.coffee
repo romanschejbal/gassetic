@@ -13,16 +13,19 @@ fs = require 'fs'
 jsYaml = require 'js-yaml'
 
 module.exports = class Gassetic
-	constructor: (@env, @port, @log = true) ->
-		@loadConfig()
+	constructor: (@env, @port, @configFile, @log = true) ->
+		@loadConfig(@configFile)
 		@includeModules()
 		@validateConfig()
 
 	###
 		self explanatory
 	###
-	loadConfig: ->
-		@config = jsYaml.safeLoad fs.readFileSync 'gassetic.yml', 'utf8'
+	loadConfig: (@configFile) ->
+		if(@configFile)
+			@config = jsYaml.safeLoad fs.readFileSync @configFile, 'utf8'
+		else
+			@config = jsYaml.safeLoad fs.readFileSync 'gassetic.yml', 'utf8'
 
 	###
 		self explanatory
@@ -222,7 +225,7 @@ module.exports = class Gassetic
 			for one of replacements[type]
 				scripts = '\n'
 				for filename in replacements[type][one]
-					scripts += @buildScriptString(type, filename) + '\n'
+					scripts += @buildScriptString(type, filename, one) + '\n'
 				regexs.push
 					pattern: new RegExp("<!-- " + @env + ':' + one + " -->([\\s\\S]*?)<!-- endbuild -->", "ig")
 					replacement: "<!-- " + @env + ":" + one + " -->" + scripts + "<!-- endbuild -->"
@@ -256,10 +259,17 @@ module.exports = class Gassetic
 						.pipe git.add()
 		return q.all progress
 
-	buildScriptString: (type, fileWebPath) ->
+	buildScriptString: (type, fileWebPath, originalOutputFileName) ->
 		fileWebPath = fileWebPath.replace /\\/g, '/' # windows workaround
 		if @getMimetypes()[type][@env].htmlTag?
-			return @getMimetypes()[type][@env].htmlTag.replace /%path%/g, fileWebPath
+			htmlTag = @getMimetypes()[type][@env].htmlTag.replace /%path%/g, fileWebPath
+			htmlTag = htmlTag.replace /%originalfilename%/g, originalOutputFileName
+			lastSlashInd = fileWebPath.lastIndexOf('/')
+			if(lastSlashInd >= 0)
+				fileName = fileWebPath.substring(lastSlashInd + 1)
+				htmlTag = htmlTag.replace /%filename%/g, fileName
+
+			return htmlTag
 		else
 			ext = path.extname fileWebPath
 			switch ext
