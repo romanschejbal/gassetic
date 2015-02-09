@@ -11,6 +11,7 @@ tap = require 'gulp-tap'
 q = require 'q'
 fs = require 'fs'
 jsYaml = require 'js-yaml'
+os = require 'os'
 
 module.exports = class Gassetic
 	constructor: (@env, @port, @log = true) ->
@@ -220,9 +221,9 @@ module.exports = class Gassetic
 		regexs = []
 		for type of replacements
 			for one of replacements[type]
-				scripts = '\n'
+				scripts = os.EOL
 				for filename in replacements[type][one]
-					scripts += @buildScriptString(type, filename) + '\n'
+					scripts += @buildScriptString(type, filename) + os.EOL
 				regexs.push
 					pattern: new RegExp("<!-- " + @env + ':' + one + " -->([\\s\\S]*?)<!-- endbuild -->", "ig")
 					replacement: "<!-- " + @env + ":" + one + " -->" + scripts + "<!-- endbuild -->"
