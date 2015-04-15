@@ -22,6 +22,7 @@ mimetypes:
             # You can add gulp
             tasks:
                 - { name: less }
+            autoRenaming: false # turn off autorenaming for dev environment
         # In 'prod' mode, use these settings
         prod:
             outputFolder: web/compiled/css  # The output folder for your saving your compiled files
