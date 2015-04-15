@@ -47,6 +47,17 @@ suite 'Gassetic', ->
 							'./test/src/coffee/**/*.coffee'
 						]
 					}
+				filter:
+					dev:
+						outputFolder: './test/dest'
+						tasks: [
+							{ name: 'coffee', args: { bare: true }, filter: ['*.coffee'] }
+						]
+					files: {
+						'filter.js': [
+							'./test/src/coffee/**/*'
+						]
+					}
 				js:
 					deps: ['coffee']
 					dev:
@@ -61,7 +72,7 @@ suite 'Gassetic', ->
 							'./test/dest/coffee.js/**/*.js'
 						]
 					}
-			default: ['css', 'js', 'coffee2']
+			default: ['css', 'js', 'coffee2', 'filter']
 			replacementPaths: [
 				'./test/templates/**/*.html'
 			]

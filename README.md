@@ -128,7 +128,15 @@ Done.
 - [Advanced usage: Multiple environments](https://github.com/crossborne/gassetic/blob/master/Resources/doc/MultipleEnvironments.md)
 - [Advanced usage: Managing dependencies](https://github.com/crossborne/gassetic/blob/master/Resources/doc/ManagingDependencies.md)
 - [Advanced usage: Custom tasks](https://github.com/crossborne/gassetic/blob/master/Resources/doc/CustomTasks.md)
+- [Advanced usage: Filtering tasks](https://github.com/crossborne/gassetic/blob/master/Resources/doc/FilteringTasks.md)
 - [Advanced usage: Livereload port and parameters](https://github.com/crossborne/gassetic/blob/master/Resources/doc/LivereloadConfig.md)
+
+## Contributions
+### Launch tests
+```sh
+npm install
+npm test
+```
 
 #### @todo:
 - better readme

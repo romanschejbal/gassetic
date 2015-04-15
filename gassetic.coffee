@@ -1,4 +1,5 @@
 clean = require 'gulp-clean'
+gulpFilter = require "gulp-filter"
 frep = require "gulp-frep"
 gulp = require "gulp"
 gutil = require "gulp-util"
@@ -182,6 +183,9 @@ module.exports = class Gassetic
 				path.basename += '_' + i++
 				path
 		tasks.map (t) =>
+			if t.filter
+				filter = gulpFilter(t.filter)
+				pipe = pipe.pipe filter
 			if !@getModuleMethod(@modules, t.name)?
 				gutil.log gutil.colors.red 'calling ' + t.name + ' task but it has not been defined, add it into the requires array'
 			if t.args?
@@ -193,6 +197,9 @@ module.exports = class Gassetic
 				pipe = pipe.pipe @getModuleMethod(@modules, t.name) [@modules[t.callback]]...
 			else
 				pipe = pipe.pipe @getModuleMethod(@modules, t.name).call @
+			if filter
+				pipe = pipe.pipe filter.restore()
+
 		pipe = pipe.pipe gulp.dest destination
 			.pipe tap (f) =>
 				if @getMimetypes()[type][@env].webPath
