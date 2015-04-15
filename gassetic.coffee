@@ -177,11 +177,6 @@ module.exports = class Gassetic
 		filtered = sourceFiles.filter (path) ->
 			path.indexOf('*') == -1 # remove all with stars
 		pipe = pipe.pipe expect {errorOnFailure: true, reportUnexpected: false}, filtered
-		if @isDev() and (@getMimetypes()[type][@env].autoRenaming == undefined or @getMimetypes()[type][@env].autoRenaming == true)
-			i = 0
-			pipe = pipe.pipe rename (path) ->
-				path.basename += '_' + i++
-				path
 		tasks.map (t) =>
 			if t.filter
 				filter = gulpFilter(t.filter)
@@ -199,6 +194,11 @@ module.exports = class Gassetic
 				pipe = pipe.pipe @getModuleMethod(@modules, t.name).call @
 			if filter
 				pipe = pipe.pipe filter.restore()
+		if @isDev() and (@getMimetypes()[type][@env].autoRenaming == undefined or @getMimetypes()[type][@env].autoRenaming == true)
+			i = 0
+			pipe = pipe.pipe rename (path) ->
+				path.basename += '_' + i++
+				path
 
 		pipe = pipe.pipe gulp.dest destination
 			.pipe tap (f) =>
