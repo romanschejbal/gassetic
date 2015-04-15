@@ -22,7 +22,7 @@ mimetypes:
             # You can add gulp
             tasks:
                 - { name: less }
-            autoRenaming: false # turn off autorenaming for dev environment
+            autoRenaming: false        # turn off autorenaming for dev environment
         # In 'prod' mode, use these settings
         prod:
             outputFolder: web/compiled/css  # The output folder for your saving your compiled files
@@ -57,7 +57,8 @@ mimetypes:
         dev:
             outputFolder: web/tmp/js       # Save the files here
             webPath:      /tmp/js          # Specify the web path
-            tasks: []                      # Don't apply any tasks
+            tasks:        []               # Don't apply any tasks
+            autoRenaming: false            # turn off autorenaming for dev environment
         prod:
             outputFolder: web/compiled/js  # Save the files here
             webPath:      /compiled/js     # Specify the web path
