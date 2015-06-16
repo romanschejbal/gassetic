@@ -1,6 +1,6 @@
 {
   "name": "gassetic",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Symfony2 Assetic replacement based on the gulp build tool",
   "main": "index.js",
   "scripts": {
@@ -12,7 +12,7 @@
   "preferGlobal": true,
   "repository": {
     "type": "git",
-    "url": "https://github.com/crossborne/gassetic"
+    "url": "https://github.com/romanschejbal/gassetic"
   },
   "keywords": [
     "gulp",
@@ -22,9 +22,9 @@
   "author": "Roman Schejbal <crossborne@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/crossborne/gassetic/issues"
+    "url": "https://github.com/romanschejbal/gassetic/issues"
   },
-  "homepage": "https://github.com/crossborne/gassetic",
+  "homepage": "https://github.com/romanschejbal/gassetic",
   "devDependencies": {
     "assert": "~1.1.1",
     "gulp-concat": "~2.2.0",
