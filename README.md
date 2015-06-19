@@ -1,4 +1,4 @@
-# Gassetic [![build status](https://travis-ci.org/crossborne/gassetic.svg?branch=master)](https://travis-ci.org/crossborne/gassetic) ![deps status](https://david-dm.org/crossborne/gassetic.png)
+# Gassetic [![build status](https://travis-ci.org/romanschejbal/gassetic.svg?branch=master)](https://travis-ci.org/romanschejbal/gassetic) ![deps status](https://david-dm.org/romanschejbal/gassetic.png)
 
 
 ## Summary
@@ -124,12 +124,12 @@ Done.
 
 ## More docs
 
-- [Using Gassetic with Symfony2](https://github.com/crossborne/gassetic/blob/master/Resources/doc/GasseticAndSymfony2.md)
-- [Advanced usage: Multiple environments](https://github.com/crossborne/gassetic/blob/master/Resources/doc/MultipleEnvironments.md)
-- [Advanced usage: Managing dependencies](https://github.com/crossborne/gassetic/blob/master/Resources/doc/ManagingDependencies.md)
-- [Advanced usage: Custom tasks](https://github.com/crossborne/gassetic/blob/master/Resources/doc/CustomTasks.md)
-- [Advanced usage: Filtering tasks](https://github.com/crossborne/gassetic/blob/master/Resources/doc/FilteringTasks.md)
-- [Advanced usage: Livereload port and parameters](https://github.com/crossborne/gassetic/blob/master/Resources/doc/LivereloadConfig.md)
+- [Using Gassetic with Symfony2](https://github.com/romanschejbal/gassetic/blob/master/Resources/doc/GasseticAndSymfony2.md)
+- [Advanced usage: Multiple environments](https://github.com/romanschejbal/gassetic/blob/master/Resources/doc/MultipleEnvironments.md)
+- [Advanced usage: Managing dependencies](https://github.com/romanschejbal/gassetic/blob/master/Resources/doc/ManagingDependencies.md)
+- [Advanced usage: Custom tasks](https://github.com/romanschejbal/gassetic/blob/master/Resources/doc/CustomTasks.md)
+- [Advanced usage: Filtering tasks](https://github.com/romanschejbal/gassetic/blob/master/Resources/doc/FilteringTasks.md)
+- [Advanced usage: Livereload port and parameters](https://github.com/romanschejbal/gassetic/blob/master/Resources/doc/LivereloadConfig.md)
 
 ## Contributions
 ### Launch tests
