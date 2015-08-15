@@ -80,7 +80,19 @@ module.exports = class Gassetic
 	###
 	###
 	getSourceFilesForType: (type) ->
-		@getMimetypes()[type].files
+		files = {}
+		for key, list of @getMimetypes()[type].files
+			files[key] = @getFilesForDestinationFile list
+		files
+
+	getFilesForDestinationFile: (originalFiles) ->
+		files = []
+		for key, file of originalFiles
+			if typeof file is 'string'
+				files.push file
+			else if typeof file is 'object' and file[@env]
+				files.push file[@env]
+		files
 
 	clean: ->
 		result = q.defer()
@@ -171,7 +183,7 @@ module.exports = class Gassetic
 		result = q.defer()
 		tasks = @getMimetypes()[type][@env].tasks
 		gutil.log ' -', gutil.colors.cyan(destinationFilenameConfigKey) if @log
-		sourceFiles = @getMimetypes()[type].files[destinationFilenameConfigKey]
+		sourceFiles = @getFilesForDestinationFile @getMimetypes()[type].files[destinationFilenameConfigKey]
 		destination = path.join @getMimetypes()[type][@env].outputFolder, destinationFilenameConfigKey
 		pipe = gulp.src sourceFiles
 		filtered = sourceFiles.filter (path) ->
@@ -317,7 +329,7 @@ module.exports = class Gassetic
 				@watchSources @getMimetypes()[type].watch, type
 			else
 				for destinationFile of @getMimetypes()[type].files
-					sources = @getMimetypes()[type].files[destinationFile]
+					sources = @getFilesForDestinationFile @getMimetypes()[type].files[destinationFile]
 					@watchSources sources, type, destinationFile
 
 		gulp.watch @watchFiles
