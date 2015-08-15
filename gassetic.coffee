@@ -184,7 +184,7 @@ module.exports = class Gassetic
 		tasks = @getMimetypes()[type][@env].tasks
 		gutil.log ' -', gutil.colors.cyan(destinationFilenameConfigKey) if @log
 		sourceFiles = @getFilesForDestinationFile @getMimetypes()[type].files[destinationFilenameConfigKey]
-		destination = path.join @getMimetypes()[type][@env].outputFolder, destinationFilenameConfigKey
+		destination = @getDestinationDirectory(@getMimetypes()[type][@env], destinationFilenameConfigKey)
 		pipe = gulp.src sourceFiles
 		filtered = sourceFiles.filter (path) ->
 			path.indexOf('*') == -1 # remove all with stars
@@ -224,6 +224,14 @@ module.exports = class Gassetic
 			.on 'end', ->
 				result.resolve true
 		return result.promise
+
+	getDestinationDirectory: (configForType, key) ->
+		useNamespace = @isDev() || (configForType.useNamespace == undefined or configForType.useNamespace == true)
+		if useNamespace
+			destination = path.join configForType.outputFolder, key
+		else
+			destination = configForType.outputFolder
+		destination
 
 	getModuleMethod: (module, taskName) ->
 		levels = taskName.split '.'
