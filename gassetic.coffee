@@ -226,7 +226,7 @@ module.exports = class Gassetic
 		return result.promise
 
 	getDestinationDirectory: (configForType, key) ->
-		useNamespace = @isDev() || (configForType.useNamespace == undefined or configForType.useNamespace == true)
+		useNamespace = @isDev() or (configForType.useNamespace == undefined or configForType.useNamespace == true)
 		if useNamespace
 			destination = path.join configForType.outputFolder, key
 		else
