@@ -47,10 +47,10 @@ module.exports = class Gassetic
 			if !@getMimetypes()[key].files?
 				throw 'missing file list for ' + key + ' mimetype'
 
-			src = @getSourceFilesForType key
 			what = Object.prototype.toString
-			if what.call(src) != '[object Object]'
+			if what.call(@getMimetypes()[key].files) != '[object Object]'
 				throw 'wrong file list for ' + key + ' mimetype'
+			src = @getSourceFilesForType key
 			for file of src
 				if what.call(file) != '[object String]'
 					throw 'invalid file "' + file + '" for ' + key + ' in ' + @env + ' environment'
