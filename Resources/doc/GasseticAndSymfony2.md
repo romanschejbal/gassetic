@@ -118,6 +118,10 @@ mimetypes:
 				
 replacementPaths:
     - src/**/*.html.twig
+
+default:
+    - js
+    - css
 ```
 
 #### 3. Run gulp
