@@ -130,6 +130,7 @@ Done.
 - [Advanced usage: Custom tasks](https://github.com/romanschejbal/gassetic/blob/master/Resources/doc/CustomTasks.md)
 - [Advanced usage: Filtering tasks](https://github.com/romanschejbal/gassetic/blob/master/Resources/doc/FilteringTasks.md)
 - [Advanced usage: Livereload port and parameters](https://github.com/romanschejbal/gassetic/blob/master/Resources/doc/LivereloadConfig.md)
+- [Advanced usage: Async script](https://github.com/romanschejbal/gassetic/blob/master/Resources/doc/AsyncScript.md)
 
 ## Contributions
 ### Launch tests
