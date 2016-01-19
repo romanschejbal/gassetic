@@ -59,5 +59,5 @@ default:
 replacementPaths:
     - "./test/templates/**/*.html"
 replacementBrackets:
-    open: "<--"
+    open: "<!--"
     close: "-->"
