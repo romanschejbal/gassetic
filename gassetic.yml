@@ -58,3 +58,6 @@ default:
     - js
 replacementPaths:
     - "./test/templates/**/*.html"
+replacementBrackets:
+    open: "<--"
+    close: "-->"

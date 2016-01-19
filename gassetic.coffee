@@ -232,11 +232,11 @@ module.exports = class Gassetic
 				for filename in replacements[type][one]
 					scripts += @buildScriptString(type, filename) + os.EOL
 				regexs.push
-					pattern: new RegExp("<!-- " + @env + ':' + one + " -->([\\s\\S]*?)<!-- endbuild -->", "ig")
-					replacement: "<!-- " + @env + ":" + one + " -->" + scripts + "<!-- endbuild -->"
+					pattern: new RegExp( @config.replacementBrackets.open + " " + @env + ':' + one + " " + @config.replacementBrackets.close + "([\\s\\S]*?)" + @config.replacementBrackets.open + " endbuild " + @config.replacementBrackets.close, "ig")
+					replacement: @config.replacementBrackets.open + " " + @env + ":" + one + " " + @config.replacementBrackets.close + scripts + @config.replacementBrackets.open + " endbuild " + @config.replacementBrackets.close
 				regexs.push
-					pattern: new RegExp("<!-- " + '\\*' + ':' + one + " -->([\\s\\S]*?)<!-- endbuild -->", "ig")
-					replacement: "<!-- " + '*' + ":" + one + " -->" + scripts + "<!-- endbuild -->"
+					pattern: new RegExp(@config.replacementBrackets.open + " " + '\\*' + ':' + one + " " + @config.replacementBrackets.close + "([\\s\\S]*?)" + @config.replacementBrackets.open + " endbuild " + @config.replacementBrackets.close, "ig")
+					replacement: @config.replacementBrackets.open + " *:" + one + " " + @config.replacementBrackets.close + scripts + @config.replacementBrackets.open + " endbuild " + @config.replacementBrackets.close
 
 		allfiles = []
 		progress = []
