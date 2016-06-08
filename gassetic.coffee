@@ -229,14 +229,22 @@ module.exports = class Gassetic
 		for type of replacements
 			for one of replacements[type]
 				scripts = os.EOL
+				asyncScripts = os.EOL
 				for filename in replacements[type][one]
-					scripts += @buildScriptString(type, filename) + os.EOL
+					scripts += @buildScriptString(type, filename, false) + os.EOL
+					asyncScripts += @buildScriptString(type, filename, true) + os.EOL
 				regexs.push
 					pattern: new RegExp("<!-- " + @env + ':' + one + " -->([\\s\\S]*?)<!-- endbuild -->", "ig")
 					replacement: "<!-- " + @env + ":" + one + " -->" + scripts + "<!-- endbuild -->"
 				regexs.push
+					pattern: new RegExp("<!-- " + @env + ':' + one + " async -->([\\s\\S]*?)<!-- endbuild -->", "ig")
+					replacement: "<!-- " + @env + ":" + one + " async -->" + asyncScripts + "<!-- endbuild -->"
+				regexs.push
 					pattern: new RegExp("<!-- " + '\\*' + ':' + one + " -->([\\s\\S]*?)<!-- endbuild -->", "ig")
 					replacement: "<!-- " + '*' + ":" + one + " -->" + scripts + "<!-- endbuild -->"
+				regexs.push
+					pattern: new RegExp("<!-- " + '\\*' + ':' + one + " async -->([\\s\\S]*?)<!-- endbuild -->", "ig")
+					replacement: "<!-- " + '*' + ":" + one + " async -->" + asyncScripts + "<!-- endbuild -->"
 
 		allfiles = []
 		progress = []
@@ -264,7 +272,7 @@ module.exports = class Gassetic
 						.pipe git.add()
 		return q.all progress
 
-	buildScriptString: (type, fileWebPath) ->
+	buildScriptString: (type, fileWebPath, async) ->
 		fileWebPath = fileWebPath.replace /\\/g, '/' # windows workaround
 		if @getMimetypes()[type][@env].htmlTag?
 			return @getMimetypes()[type][@env].htmlTag.replace /%path%/g, fileWebPath
@@ -274,7 +282,7 @@ module.exports = class Gassetic
 				when ".css"
 					str = "<link rel=\"stylesheet\" href=\"" + fileWebPath + "\" />"
 				when ".js"
-					str = "<script src=\"" + fileWebPath + "\"></script>"
+					str = "<script" + (if async then " async" else "") + " src=\"" + fileWebPath + "\"></script>"
 				else
 					str = '<!-- extension not supported -->'
 			str
