@@ -1,0 +1,75 @@
+requires:
+  plumber: gulp-plumber
+  concat: gulp-concat
+  sass: gulp-sass
+  freeze: gulp-freeze
+  rename: gulp-rename
+  babel: gulp-babel
+  livereload: gulp-livereload
+  cleanCss: gulp-clean-css
+  shorter: ./custom-callback.js
+mimetypes:
+  css:
+    deps:
+      - "sass"
+    dev:
+      outputFolder: "./dest-dev"
+      webPath: "/web"
+      tasks:
+        - { name: "plumber" }
+        - { name: "livereload", args: { start: true } }
+      htmlTag: "<link rel='stylesheet' href='{{ asset('%path%') }}' />"
+    prod:
+      outputFolder: "./dest-prod"
+      webPath: "/web"
+      tasks:
+        - { name: "cleanCss" }
+        - { name: "concat", args: "%filename%" }
+        - { name: "freeze" }
+        - { name: "rename", callback: shorter }
+      htmlTag: "<link rel='stylesheet' href='{{ asset('%path%') }}' />"
+    files:
+      build.css:
+        - "dest-temp/style.css"
+  sass:
+    dev:
+      outputFolder: "./dest-temp"
+      webPath: "/web"
+      tasks:
+        - { name: "plumber" }
+        - { name: sass }
+    prod:
+      outputFolder: "./dest-temp"
+      webPath: "/web"
+      tasks:
+        - { name: sass }
+    files:
+      fromSass.css:
+        - "src/style.scss"
+    watch:
+      - "src/*.scss"
+  js:
+    dev:
+      outputFolder: "./dest-dev"
+      webPath: "/web"
+      tasks:
+        - { name: "plumber" }
+        - { name: "babel" }
+      htmlTag: "<script type='text/javascript' src='{{ asset('%path%') }}'></script>"
+    prod:
+      outputFolder: "./dest-prod"
+      webPath: "/web"
+      tasks:
+        - { name: "babel" }
+        - { name: "concat", args: "%filename%" }
+        - { name: "freeze" }
+        - { name: "rename", callback: shorter }
+      htmlTag: "<script type='text/javascript' src='{{ asset('%path%') }}'></script>"
+    files:
+      build.js:
+        - "src/*.js"
+default:
+  - css
+  - js
+replacementPaths:
+  - "./**/*.html"

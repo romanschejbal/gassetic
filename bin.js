@@ -1,3 +1,4 @@
-#!/usr/bin/env node
-require('coffee-script/register');
-require('./index');
+require('babel-register');
+const gassetic = require('./src').default;
+
+gassetic();
