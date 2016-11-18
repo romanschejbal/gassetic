@@ -1,0 +1,21 @@
+dependencies:
+  pre:
+    - curl -o- -L https://yarnpkg.com/install.sh | bash
+  cache_directories:
+    - ~/.yarn-cache
+  override:
+    - yarn
+test:
+  pre:
+    - yarn run lint
+  override:
+    - yarn test
+  post:
+    - cd examples && node ../bin.js build --env prod
+machine:
+  node:
+    version: v6.2.0
+deployment:
+  production:
+    branch: master
+    commands: []

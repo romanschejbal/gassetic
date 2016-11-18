@@ -1,11 +1,18 @@
 <html>
   <head>
     <!-- dev:build.js -->
-      <script type='text/javascript' src='{{ asset('/web/src/entry.js') }}'></script>
-      <script type='text/javascript' src='{{ asset('/web/src/test.js') }}'></script>
+      <script type='text/javascript' src='{{ asset('/web/dest-dev/build.js/entry.js') }}'></script>
+      <script type='text/javascript' src='{{ asset('/web/dest-dev/build.js/test.js') }}'></script>
     <!-- endbuild -->
     <!-- dev:build.css -->
-      <link rel='stylesheet' href='{{ asset('/web/dest-temp/style.css') }}' />
+      <link rel='stylesheet' href='{{ asset('/web/dest-dev/build.css/fromSass.css/style.css') }}' />
+    <!-- endbuild -->
+
+    <!-- prod:build.js -->
+      <script type='text/javascript' src='{{ asset('/web/dest-prod/build.js/build_1448.js') }}'></script>
+    <!-- endbuild -->
+    <!-- prod:build.css -->
+      <link rel='stylesheet' href='{{ asset('/web/dest-prod/build.css/build_4e83.css') }}' />
     <!-- endbuild -->
   </head>
   <body>

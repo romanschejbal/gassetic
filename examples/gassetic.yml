@@ -1,5 +1,4 @@
 requires:
-  plumber: gulp-plumber
   concat: gulp-concat
   sass: gulp-sass
   freeze: gulp-freeze
@@ -16,7 +15,6 @@ mimetypes:
       outputFolder: "./dest-dev"
       webPath: "/web"
       tasks:
-        - { name: "plumber" }
         - { name: "livereload", args: { start: true } }
       htmlTag: "<link rel='stylesheet' href='{{ asset('%path%') }}' />"
     prod:
@@ -30,13 +28,12 @@ mimetypes:
       htmlTag: "<link rel='stylesheet' href='{{ asset('%path%') }}' />"
     files:
       build.css:
-        - "dest-temp/style.css"
+        - "dest-temp/**/style.css"
   sass:
     dev:
       outputFolder: "./dest-temp"
       webPath: "/web"
       tasks:
-        - { name: "plumber" }
         - { name: sass }
     prod:
       outputFolder: "./dest-temp"
@@ -53,7 +50,6 @@ mimetypes:
       outputFolder: "./dest-dev"
       webPath: "/web"
       tasks:
-        - { name: "plumber" }
         - { name: "babel" }
       htmlTag: "<script type='text/javascript' src='{{ asset('%path%') }}'></script>"
     prod:

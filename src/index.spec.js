@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 
 describe('index', () => {
   const gassetic = () => require('./');
@@ -11,13 +12,13 @@ describe('index', () => {
     let
       mockLoadFn,
       mockValidateFn,
-      mockPlumberModule,
+      mockBabelModule,
       mockSassModule;
 
     beforeEach(() => {
       mockLoadFn = jest.fn(() => ({
         requires: {
-          plumber: 'gulp-plumber',
+          babel: 'gulp-babel',
           sass: 'gulp-sass',
           custom: 'custom'
         },
@@ -25,14 +26,14 @@ describe('index', () => {
         default: []
       }));
       mockValidateFn = jest.fn();
-      mockPlumberModule = jest.fn();
+      mockBabelModule = jest.fn();
       mockSassModule = jest.fn();
 
       jest.mock('./config', () => ({
         load: mockLoadFn,
         validate: mockValidateFn
       }));
-      jest.mock('gulp-plumber', mockPlumberModule, { virtual: true });
+      jest.mock('gulp-babel', mockBabelModule, { virtual: true });
       jest.mock('gulp-sass', mockSassModule, { virtual: true });
       jest.mock('custom', jest.fn(), { virtual: true });
     });
@@ -49,7 +50,7 @@ describe('index', () => {
 
     it('loads modules specified inside "requires" section', () => {
       gassetic().default();
-      expect(mockPlumberModule).toHaveBeenCalled();
+      expect(mockBabelModule).toHaveBeenCalled();
       expect(mockSassModule).toHaveBeenCalled();
     });
   });
@@ -118,9 +119,9 @@ describe('index', () => {
         }
       }, 'dev');
       expect(tasks).toEqual([
-        { fn: modules.babel.doSomething },
-        { fn: modules.minify, args: { mini: true } },
-        { fn: modules.boo.foo.doo, args: { a: 1, b: 2 } }
+        { fn: modules.babel.doSomething, name: 'babel.doSomething' },
+        { fn: modules.minify, args: { mini: true }, name: 'minify' },
+        { fn: modules.boo.foo.doo, args: { a: 1, b: 2 }, name: 'boo.foo.doo' }
       ]);
     });
 
@@ -137,7 +138,7 @@ describe('index', () => {
         }
       }, 'dev');
       expect(tasks).toEqual([
-        { fn: modules.babel, callback: modules.custom },
+        { fn: modules.babel, callback: modules.custom, name: 'babel' },
       ]);
     });
   });
@@ -170,7 +171,7 @@ describe('index', () => {
       ]);
       expect(pipe).toHaveBeenCalledWith(1);
       expect(pipe).toHaveBeenCalledWith(2);
-      expect(dest).toHaveBeenCalledWith(outputFolder);
+      expect(dest).toHaveBeenCalledWith(path.join(outputFolder, 'build.js'));
     });
 
     it('replaces arguments for filenames', () => {

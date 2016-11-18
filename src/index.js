@@ -1,6 +1,7 @@
 import glob from 'glob';
 import gulp from 'gulp';
 import gutil from 'gulp-util';
+import plumber from 'gulp-plumber';
 import tap from 'gulp-tap';
 import fs from 'fs';
 import path from 'path';
@@ -11,51 +12,55 @@ import { load, validate } from './config/index.js';
 // entry
 export default async () => {
   const startTime = new Date();
-  gutil.log(gutil.colors.blue('Loading gassetic.yml'));
+  gutil.log(gutil.colors.yellow('Loading gassetic.yml'));
 
   try {
     const env = yargs.argv.env || 'dev';
+    const command = yargs.argv._[0];
 
     const config = load('gassetic.yml');
     validate(config);
 
     const steps = getBuildSteps(config);
+    const modules = loadModules(config.requires);
 
     // clear
     await Promise.all(steps.map(async deps =>
       Promise.all(deps.map(async dep =>
         del(config.mimetypes[dep][env].outputFolder)))));
 
-    if (yargs.argv._[0] === 'clear')
+    if (command === 'clear')
       return;
 
     if (steps.length == 0)
       return;
-
-    const modules = Object.entries(config.requires)
-      .reduce((registry, [moduleKey, module]) => ({
-        ...registry,
-        [moduleKey]: require(module.startsWith('./') && path.join(process.cwd(), module) || module)
-      }), {});
 
     const allFiles = (await Promise.all(steps.map(async deps => {
       const replacements = [];
       for (const dep of deps) {
         try {
           const tasks = getTasks(modules, config.mimetypes[dep], env);
-          gutil.log(`${gutil.colors.yellow('▸ compiling')} ${gutil.colors.cyan(dep)}`);
+          const startTaskTime = new Date();
+          gutil.log(`${gutil.colors.magenta('▸')} compiling ${gutil.colors.cyan(dep)} with ${gutil.colors.gray(tasks.map(t => t.name).join(', '))}`);
+          // Object.entries(config.mimetypes[dep].files.forEach(([destFilename]) => gutil.log(gutil.colors.gray(`  - ${destFilename}`)));
           const files = await runTasks(config.mimetypes[dep].files, tasks, config.mimetypes[dep][env]);
-          gutil.log(`${gutil.colors.green('✓')} finished ${gutil.colors.cyan(dep)}`);
-          replacements.push({ htmlTag: config.mimetypes[dep][env].htmlTag, files });
+          gutil.log(`${gutil.colors.green('✓')} ${gutil.colors.green(dep)} finished ${gutil.colors.gray(`in ${Math.round((new Date() - startTaskTime) / 10) / 100}s`)}`);
+          replacements.push({
+            htmlTag: config.mimetypes[dep][env].htmlTag || `<!-- missing htmlTag ${dep} -> ${env} -->`,
+            files
+          });
 
-          Object.entries(config.mimetypes[dep].files).map(([key, files]) =>
-            gulp.watch(config.mimetypes[dep].watch || files, async () => {
-              gutil.log(`${gutil.colors.yellow('▸ compiling')} ${gutil.colors.cyan(dep)}`);
-              await runTasks({
-                [key]: files
-              }, tasks, config.mimetypes[dep][env]);
-              gutil.log(`${gutil.colors.green('✓')} finished ${gutil.colors.cyan(dep)}`);
-            }));
+          if (env === 'dev' && command !== 'build') {
+            Object.entries(config.mimetypes[dep].files).map(([key, files]) => {
+              gulp.watch(config.mimetypes[dep].watch || files, async () => {
+                gutil.log(`${gutil.colors.yellow('▸ compiling')} ${gutil.colors.cyan(dep)}`);
+                await runTasks({
+                  [key]: files
+                }, tasks, config.mimetypes[dep][env]);
+                gutil.log(`${gutil.colors.green('✓')} finished ${gutil.colors.cyan(dep)}`);
+              });
+            });
+          }
 
         } catch (e) {
           gutil.log(gutil.colors.red(e));
@@ -66,9 +71,9 @@ export default async () => {
       .reduce((a, b) => a.concat(b))
       .filter(a => a.htmlTag);
 
-    gutil.log(gutil.colors.blue('Updating templates'));
+    gutil.log(gutil.colors.blue('Updating templates 📝'));
     await replaceInTemplates(config.replacementPaths, allFiles, env);
-    gutil.log(gutil.colors.green(`Done in ${Math.round((new Date() - startTime) / 100) / 10}s 👍`));
+    gutil.log(gutil.colors.green(`Build finished in ${Math.round((new Date() - startTime) / 10) / 100}s 👍`));
   } catch (e) {
     return gutil.log(gutil.colors.red(e));
   }
@@ -76,14 +81,22 @@ export default async () => {
 
 // steps
 export const getBuildSteps = config =>
-  config.default.map(mimetype => {
-    return getBuildStepDependency(config, mimetype);
-  });
+  config.default.map(mimetype => getBuildStepDependency(config, mimetype));
 
 const getBuildStepDependency = (config, mimetype) =>
   (config.mimetypes[mimetype].deps || [])
-    .reduce((final, dep) => getBuildStepDependency(config, dep).concat(final), [])
-    .concat([mimetype]);
+    .reduce((final, dep) => getBuildStepDependency(config, dep).concat(final), [mimetype]);
+
+// modules
+const loadModules = requires => {
+  module.paths.unshift(path.join(process.cwd(), 'node_modules'));
+  module.paths.unshift(process.cwd());
+  return Object.entries(requires)
+    .reduce((registry, [moduleKey, module]) => ({
+      ...registry,
+      [moduleKey]: require(module.startsWith('./') && path.join(process.cwd(), module) || module)
+    }), {});
+};
 
 // tasks
 export const getTasks = (modules, mimetype, environment) =>
@@ -91,11 +104,8 @@ export const getTasks = (modules, mimetype, environment) =>
     if (task.callback) {
       task.callback = modules[task.callback];
     }
-    return task;
-  }).map(({ name, ...task }) => ({
-    ...task,
-    fn: getModuleFunction(modules, name),
-  }));
+    return { ...task, fn: getModuleFunction(modules, task.name) };
+  });
 
 const getModuleFunction = (modules, taskName) =>
   taskName.split('.').reduce((scope, taskPart) => scope[taskPart], modules);
@@ -104,15 +114,15 @@ export const runTasks = async (files, tasks, { outputFolder, webPath }) =>
   (await Promise.all(Object.keys(files).map(destFilename => new Promise((resolve, reject) => {
     try {
       const filesCreated = [];
-      tasks.reduce(
+      [{ fn: plumber, callback: e => reject(e) }].concat(tasks).reduce(
         (pipe, nextTask) => pipe.pipe(nextTask.callback ? nextTask.fn(nextTask.callback) : replaceArguments(nextTask, { filename: destFilename })()),
         gulp.src(files[destFilename])
       )
+      .pipe(gulp.dest(path.join(outputFolder, destFilename)))
       .pipe(tap(file => {
-        const fileWebPath = webPath + file.path.substring(path.join(process.cwd()).length);
+        const fileWebPath = path.join(webPath || '', file.path.substring(process.cwd().length).replace(outputFolder, ''));
         filesCreated.push(fileWebPath);
       }))
-      .pipe(gulp.dest(outputFolder))
       .on('end', () => resolve({ [destFilename]: filesCreated }));
     } catch (e) {
       reject(e);
