@@ -75,7 +75,8 @@ export default async () => {
     await replaceInTemplates(config.replacementPaths, allFiles, env);
     gutil.log(gutil.colors.green(`Build finished in ${Math.round((new Date() - startTime) / 10) / 100}s 👍`));
   } catch (e) {
-    return gutil.log(gutil.colors.red(e));
+    gutil.log(gutil.colors.red(e));
+    process.exit(1);
   }
 };
 
