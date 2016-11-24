@@ -11,7 +11,7 @@ test:
   override:
     - yarn test
   post:
-    - cd examples && node ../bin.js build --env prod
+    - cd examples && yarn && node ../bin.js build --env prod
 machine:
   node:
     version: v6.2.0
