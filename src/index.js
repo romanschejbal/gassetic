@@ -7,6 +7,7 @@ import fs from 'fs';
 import path from 'path';
 import del from 'del';
 import yargs from 'yargs';
+import yaml from 'js-yaml';
 import { load, validate } from './config/index.js';
 
 // entry
@@ -46,12 +47,14 @@ export default async () => {
           const files = await runTasks(config.mimetypes[dep].files, tasks, config.mimetypes[dep][env]);
           gutil.log(`${gutil.colors.green('✓')} ${gutil.colors.green(dep)} finished ${gutil.colors.gray(`in ${Math.round((new Date() - startTaskTime) / 10) / 100}s`)}`);
           replacements.push({
+            mimetype: dep,
             htmlTag: config.mimetypes[dep][env].htmlTag || `<!-- missing htmlTag ${dep} -> ${env} -->`,
             files
           });
 
           if (env === 'dev' && command !== 'build') {
             Object.entries(config.mimetypes[dep].files).map(([key, files]) => {
+              gutil.log(`${gutil.colors.white('▸ watching')} ${gutil.colors.gray(key)}`);
               gulp.watch(config.mimetypes[dep].watch || files, async () => {
                 gutil.log(`${gutil.colors.yellow('▸ compiling')} ${gutil.colors.cyan(dep)}`);
                 await runTasks({
@@ -73,6 +76,8 @@ export default async () => {
 
     gutil.log(gutil.colors.blue('Updating templates 📝'));
     await replaceInTemplates(config.replacementPaths, allFiles, env);
+    gutil.log(gutil.colors.blue(`Creating gassetic.dump.${env}.yml`));
+    await createResultsFile(config.resultsFolder, allFiles, env);
     gutil.log(gutil.colors.green(`Build finished in ${Math.round((new Date() - startTime) / 10) / 100}s 👍`));
   } catch (e) {
     gutil.log(gutil.colors.red(e));
@@ -121,7 +126,12 @@ export const runTasks = async (files, tasks, { outputFolder, webPath }) =>
       )
       .pipe(gulp.dest(path.join(outputFolder, destFilename)))
       .pipe(tap(file => {
-        const fileWebPath = path.join(webPath || '', file.path.substring(process.cwd().length).replace(outputFolder, ''));
+        if (yargs.argv.print)
+          gutil.log(gutil.colors.white('▸ ') + gutil.colors.gray(`compiled ${file.path}`));
+
+        if (!webPath) return;
+        const filepath = file.path.substring(process.cwd().length).replace(outputFolder, '');
+        const fileWebPath = path.join(webPath, filepath);
         filesCreated.push(fileWebPath);
       }))
       .on('end', () => resolve({ [destFilename]: filesCreated }));
@@ -154,6 +164,13 @@ export const replaceInTemplates = (replacementPaths, files, environment) =>
     } catch (e) {
       reject(e);
     }
+  });
+
+const createResultsFile = (resultsFolder = '.', files, environment) =>
+  new Promise(resolve => {
+    const dump = yaml.safeDump(files);
+    fs.writeFileSync(path.join(resultsFolder, `gassetic.dump.${environment}.yml`), dump, 'utf-8');
+    resolve();
   });
 
 const globPromised = pattern =>
