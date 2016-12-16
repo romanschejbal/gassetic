@@ -38,12 +38,13 @@ export default async () => {
 
     const allFiles = (await Promise.all(steps.map(async deps => {
       const replacements = [];
+
       for (const dep of deps) {
         try {
           const tasks = getTasks(modules, config.mimetypes[dep], env);
           const startTaskTime = new Date();
+
           gutil.log(`${gutil.colors.magenta('▸')} compiling ${gutil.colors.cyan(dep)} with ${gutil.colors.gray(tasks.map(t => t.name).join(', '))}`);
-          // Object.entries(config.mimetypes[dep].files.forEach(([destFilename]) => gutil.log(gutil.colors.gray(`  - ${destFilename}`)));
           const files = await runTasks(config.mimetypes[dep].files, tasks, config.mimetypes[dep][env]);
           gutil.log(`${gutil.colors.green('✓')} ${gutil.colors.green(dep)} finished ${gutil.colors.gray(`in ${Math.round((new Date() - startTaskTime) / 10) / 100}s`)}`);
           replacements.push({
@@ -55,16 +56,13 @@ export default async () => {
           if (env === 'dev' && command !== 'build') {
             Object.entries(config.mimetypes[dep].files).map(([key, files]) => {
               gutil.log(`${gutil.colors.white('▸ watching')} ${gutil.colors.gray(key)}`);
-              gulp.watch(config.mimetypes[dep].watch || files, async () => {
+              gulp.watch(config.mimetypes[dep].watch || files, { maxListeners: Infinity }, async () => {
                 gutil.log(`${gutil.colors.yellow('▸ compiling')} ${gutil.colors.cyan(dep)}`);
-                await runTasks({
-                  [key]: files
-                }, tasks, config.mimetypes[dep][env]);
+                await runTasks({ [key]: files }, tasks, config.mimetypes[dep][env]);
                 gutil.log(`${gutil.colors.green('✓')} finished ${gutil.colors.cyan(dep)}`);
               });
             });
           }
-
         } catch (e) {
           gutil.log(gutil.colors.red(e));
         }
@@ -121,7 +119,11 @@ export const runTasks = async (files, tasks, { outputFolder, webPath }) =>
     try {
       const filesCreated = [];
       [{ fn: plumber, callback: e => reject(e) }].concat(tasks).reduce(
-        (pipe, nextTask) => pipe.pipe(nextTask.callback ? nextTask.fn(nextTask.callback) : replaceArguments(nextTask, { filename: destFilename })()),
+        (pipe, nextTask) =>
+          pipe.pipe(nextTask.callback ?
+            nextTask.fn(nextTask.callback)
+            : replaceArguments(nextTask, { filename: destFilename })()
+          ),
         gulp.src(files[destFilename])
       )
       .pipe(gulp.dest(path.join(outputFolder, destFilename)))
