@@ -9,7 +9,7 @@ test:
   pre:
     - yarn run lint
   override:
-    - yarn test
+    - yarn test -- --verbose
   post:
     - cd examples && yarn && node ../bin.js build --env prod
 machine:
