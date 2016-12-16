@@ -170,7 +170,7 @@ export const replaceInTemplates = (replacementPaths, files, environment) =>
 
 const createResultsFile = (resultsFolder = process.cwd(), files, environment) =>
   new Promise(resolve => {
-    const dump = yaml.safeDump(files);
+    const dump = yaml.safeDump(files, { lineWidth: Infinity });
     fs.writeFileSync(path.join(resultsFolder, `gassetic.dump.${environment}.yml`), dump, 'utf-8');
     resolve();
   });
