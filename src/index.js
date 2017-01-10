@@ -36,6 +36,8 @@ export default async () => {
     if (steps.length == 0)
       return;
 
+    let hasErrors = false;
+
     const allFiles = (await Promise.all(steps.map(async deps => {
       const replacements = [];
 
@@ -64,6 +66,7 @@ export default async () => {
             });
           }
         } catch (e) {
+          hasErrors = true;
           gutil.log(gutil.colors.red(e));
         }
       }
@@ -77,6 +80,10 @@ export default async () => {
     gutil.log(gutil.colors.blue(`Creating gassetic.dump.${env}.yml`));
     await createResultsFile(config.resultsFolder, allFiles, env);
     gutil.log(gutil.colors.green(`Build finished in ${Math.round((new Date() - startTime) / 10) / 100}s 👍`));
+    if (hasErrors) {
+      gutil.log(gutil.colors.red('But hey, there were errors'));
+      process.exit(1);
+    }
   } catch (e) {
     gutil.log(gutil.colors.red(e));
     process.exit(1);
