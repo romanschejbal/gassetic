@@ -237,7 +237,7 @@ describe('index', () => {
         writeFileSync: jest.fn()
       };
       jest.mock('fs', () => fsMock);
-      await gassetic().replaceInTemplates(['./*.js'], [{
+      await gassetic().replaceInTemplates(['./bin/*.js'], [{
         htmlTag: '<script src="%path%"></script>',
         files: {
           'build.js': ['./test1', './test2']
@@ -248,8 +248,8 @@ describe('index', () => {
           'build.css': ['./test1', './test2']
         }
       }], 'dev');
-      expect(fsMock.readFileSync).toHaveBeenCalledWith('./bin.js', 'utf-8');
-      expect(fsMock.writeFileSync).toHaveBeenCalledWith('./bin.js', `
+      expect(fsMock.readFileSync).toHaveBeenCalledWith('./bin/index.js', 'utf-8');
+      expect(fsMock.writeFileSync).toHaveBeenCalledWith('./bin/index.js', `
         boo
         <!-- dev:build.js -->
           <script src="./test1"></script>

@@ -163,7 +163,7 @@ export const replaceInTemplates = (replacementPaths, files, environment) =>
             const scripts = files.map(path => mimetype.htmlTag.replace('%path%', path));
             return newContent.replace(
               new RegExp(`([ \t]*)<!-- ${environment}:${destFilename} -->([\\s\\S]*?)<!-- endbuild -->`, 'ig'),
-              `$1<!-- ${environment}:${destFilename} -->\n$1${scripts.map(script => '  ' + script).join(`\n$1`)}\n$1<!-- endbuild -->`
+              `$1<!-- ${environment}:${destFilename} -->\n$1${scripts.map(script => '  ' + script).join('\n$1')}\n$1<!-- endbuild -->`
             );
           }, newContent),
           fs.readFileSync(template, 'utf-8'));
