@@ -1,0 +1,16 @@
+- mimetype: sass
+  htmlTag: <!-- missing htmlTag sass -> dev -->
+  files:
+    fromSass.css:
+      - /web/dest-temp/fromSass.css/style.css
+- mimetype: css
+  htmlTag: '<link rel=''stylesheet'' href=''{{ asset(''%path%'') }}'' />'
+  files:
+    build.css:
+      - /web/dest-dev/build.css/fromSass.css/style.css
+- mimetype: js
+  htmlTag: '<script type=''text/javascript'' src=''{{ asset(''%path%'') }}''></script>'
+  files:
+    build.js:
+      - /web/dest-dev/build.js/entry.js
+      - /web/dest-dev/build.js/example.js
