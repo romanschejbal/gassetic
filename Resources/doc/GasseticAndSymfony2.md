@@ -49,79 +49,79 @@ Your old code:
 
 _layout.html.twig_
 ```twig
-    {% javascripts
-        '../vendor/twbs/bootstrap/js/bootstrap-transition.js'
-        '../vendor/twbs/bootstrap/js/bootstrap-modal.js'
-        '../vendor/twbs/bootstrap/js/bootstrap-button.js'
-        '../vendor/twbs/bootstrap/js/bootstrap-alert.js'
-        '../vendor/twbs/bootstrap/js/bootstrap-tooltip.js'
-        '../vendor/twbs/bootstrap/js/bootstrap-carousel.js'
-        '@MopaBootstrapBundle/Resources/public/js/mopabootstrap-collection.js'
-        '../vendor/twbs/bootstrap/js/bootstrap-dropdown.js'
-		'@LifoTypeaheadBundle/Resources/public/js/typeaheadbundle.js'
-        output='js/compiled/main.js'
-        filter='?yui_js'
-    %}
+  {% javascripts
+    '../vendor/twbs/bootstrap/js/bootstrap-transition.js'
+    '../vendor/twbs/bootstrap/js/bootstrap-modal.js'
+    '../vendor/twbs/bootstrap/js/bootstrap-button.js'
+    '../vendor/twbs/bootstrap/js/bootstrap-alert.js'
+    '../vendor/twbs/bootstrap/js/bootstrap-tooltip.js'
+    '../vendor/twbs/bootstrap/js/bootstrap-carousel.js'
+    '@MopaBootstrapBundle/Resources/public/js/mopabootstrap-collection.js'
+    '../vendor/twbs/bootstrap/js/bootstrap-dropdown.js'
+    '@LifoTypeaheadBundle/Resources/public/js/typeaheadbundle.js'
+    output='js/compiled/main.js'
+    filter='?yui_js'
+  %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
-    {% endjavascripts %}
+  {% endjavascripts %}
 ```
 
 Your new code:
 
 _layout.html.twig_
 ```twig
-    {% if app.environment == 'prod' %}
-        <!-- prod:bootstrap.js --><!-- endbuild -->
-    {% else %}
-        <!-- dev:bootstrap.js --><!-- endbuild -->a
-    {% endif %}
+  {% if app.environment == 'prod' %}
+    <!-- prod:bootstrap.js --><!-- endbuild -->
+  {% else %}
+    <!-- dev:bootstrap.js --><!-- endbuild -->
+  {% endif %}
 ```
 
 _gassetic.yml_
 ```yaml
 requires:
-    concat: gulp-concat
-    uglify: gulp-uglify
-    freeze: gulp-freeze
+  concat: gulp-concat
+  uglify: gulp-uglify
+  freeze: gulp-freeze
 mimetypes:
-    css:
-        # Your CSS settings here...
-    js:
-        dev:
-            outputFolder: web/tmp/js
-            webPath:      /tmp/js
-            tasks: []
-        prod:
-            outputFolder: web/compiled/js
-            webPath:      /compiled/js
-            tasks:
-				# This task concats all the files into one
-                - { name: concat, args: '%filename%' }
-				# This task minifies the scripts
-                - { name: uglify, args: { mangle: false } }
-				# This is a cache busting gulp plugin that appends
-				#  an md5 of the contents to the filename
-                - { name: freeze }
-        files:
-            bootstrap.js:
-                - assets/vendor/bootstrap/js/alert.js
-                - assets/vendor/bootstrap/js/button.js
-                - assets/vendor/bootstrap/js/carousel.js
-                - assets/vendor/bootstrap/js/dropdown.js
-                - assets/vendor/bootstrap/js/modal.js
-                - assets/vendor/bootstrap/js/collapse.js
-                - assets/vendor/bootstrap/js/tooltip.js
-                - assets/vendor/bootstrap/js/popover.js
-                - assets/vendor/bootstrap/js/transition.js
-                - vendor/mopa/bootstrap-bundle/Mopa/Bundle/BootstrapBundle/Resources/public/js/mopabootstrap-collection.js
-				- vendor/lifo/typeahead-bundle/Lifo/TypeaheadBundle/Resources/public/js/typeaheadbundle.js
-				
+  css:
+      # Your CSS settings here...
+  js:
+    dev:
+      outputFolder: web/tmp/js
+      webPath:      /tmp/js
+      tasks: []
+    prod:
+      outputFolder: web/compiled/js
+      webPath:      /compiled/js
+      tasks:
+        # This task concats all the files into one
+        - { name: concat, args: '%filename%' }
+        # This task minifies the scripts
+        - { name: uglify, args: { mangle: false } }
+        # This is a cache busting gulp plugin that appends
+        #  an md5 of the contents to the filename
+        - { name: freeze }
+    files:
+      bootstrap.js:
+        - assets/vendor/bootstrap/js/alert.js
+        - assets/vendor/bootstrap/js/button.js
+        - assets/vendor/bootstrap/js/carousel.js
+        - assets/vendor/bootstrap/js/dropdown.js
+        - assets/vendor/bootstrap/js/modal.js
+        - assets/vendor/bootstrap/js/collapse.js
+        - assets/vendor/bootstrap/js/tooltip.js
+        - assets/vendor/bootstrap/js/popover.js
+        - assets/vendor/bootstrap/js/transition.js
+        - vendor/mopa/bootstrap-bundle/Mopa/Bundle/BootstrapBundle/Resources/public/js/mopabootstrap-collection.js
+        - vendor/lifo/typeahead-bundle/Lifo/TypeaheadBundle/Resources/public/js/typeaheadbundle.js
+
 replacementPaths:
-    - src/**/*.html.twig
+  - src/**/*.html.twig
 
 default:
-    - js
-    - css
+  - js
+  - css
 ```
 
 #### 3. Run gulp
@@ -129,37 +129,37 @@ default:
 First build and watch the dev environment
 
 ```
-    gassetic
+  gassetic
 ```
 
 And then gulp build for the prod environment
 
 ```
-    gassetic build --env=prod
+  gassetic build --env=prod
 ```
 
 The resulting output is:
 
 ```twig
-    {% if app.environment == 'dev' %}
-        <!-- dev:bootstrap.js -->
-<script src="/tmp/js/bootstrap.js/alert.js"></script>
-<script src="/tmp/js/bootstrap.js/button.js"></script>
-<script src="/tmp/js/bootstrap.js/carousel.js"></script>
-<script src="/tmp/js/bootstrap.js/dropdown.js"></script>
-<script src="/tmp/js/bootstrap.js/modal.js"></script>
-<script src="/tmp/js/bootstrap.js/collapse.js"></script>
-<script src="/tmp/js/bootstrap.js/tooltip.js"></script>
-<script src="/tmp/js/bootstrap.js/popover.js"></script>
-<script src="/tmp/js/bootstrap.js/transition.js"></script>
-<script src="/tmp/js/bootstrap.js/mopabootstrap-collection.js"></script>
-<script src="/tmp/js/bootstrap.js/typeaheadbundle.js"></script>
-<!-- endbuild -->
+  {% if app.environment == 'dev' %}
+    <!-- dev:bootstrap.js -->
+      <script src="/tmp/js/bootstrap.js/alert.js"></script>
+      <script src="/tmp/js/bootstrap.js/button.js"></script>
+      <script src="/tmp/js/bootstrap.js/carousel.js"></script>
+      <script src="/tmp/js/bootstrap.js/dropdown.js"></script>
+      <script src="/tmp/js/bootstrap.js/modal.js"></script>
+      <script src="/tmp/js/bootstrap.js/collapse.js"></script>
+      <script src="/tmp/js/bootstrap.js/tooltip.js"></script>
+      <script src="/tmp/js/bootstrap.js/popover.js"></script>
+      <script src="/tmp/js/bootstrap.js/transition.js"></script>
+      <script src="/tmp/js/bootstrap.js/mopabootstrap-collection.js"></script>
+      <script src="/tmp/js/bootstrap.js/typeaheadbundle.js"></script>
+    <!-- endbuild -->
     {% else %}
-        <!-- prod:bootstrap.js -->
-<script src="/compiled/js/bootstrap.js/bootstrap_53fb1687a98969b989c30a866bb44e43567.js"></script>
-<!-- endbuild -->
-    {% endif %}
+    <!-- prod:bootstrap.js -->
+      <script src="/compiled/js/bootstrap.js/bootstrap_53fb1687a98969b989c30a866bb44e43567.js"></script>
+    <!-- endbuild -->
+  {% endif %}
 ```
 
 Because the dev environment keeps all your files separated, it makes it easy to debug individual scripts
