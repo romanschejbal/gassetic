@@ -140,7 +140,7 @@ export const runTasks = async (files, tasks, { outputFolder, webPath }) =>
 
         if (!webPath) return;
         const filepath = file.path.substring(process.cwd().length).replace(/\\/g, '/').replace(outputFolder, '');
-        const fileWebPath = path.join(webPath, filepath);
+        const fileWebPath = path.join(webPath, filepath).replace(/\\/g, '/');
         filesCreated.push(fileWebPath);
       }))
       .on('end', () => resolve({ [destFilename]: filesCreated }));

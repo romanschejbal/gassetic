@@ -1,6 +1,6 @@
 {
   "name": "gassetic",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Symfony2 Assetic replacement based on the gulp build tool",
   "main": "./dist/index.js",
   "bin": {
