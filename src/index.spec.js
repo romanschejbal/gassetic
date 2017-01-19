@@ -219,6 +219,25 @@ describe('index', () => {
         'build.css': ['/web/test3', '/web/test4']
       });
     });
+
+    it('uses forward slash for web filepath', async () => {
+      let i = 0;
+      jest.mock('gulp-tap', () => (cb => [1, 2].forEach(() => cb({ path: `${process.cwd().replace(/\//g, '\\')}\\test${++i}` }))));
+      const tasks = [{ fn: jest.fn() }];
+      const outputFolder = './test';
+      const webPath = '/web';
+      const files = await gassetic().runTasks({
+        'build.js': [
+          './src/config/index.js',
+          './src/config/index.spec.js'
+        ],
+        'build.css': []
+      }, tasks, { outputFolder, webPath });
+      expect(files).toEqual({
+        'build.js': ['/web/test1', '/web/test2'],
+        'build.css': ['/web/test3', '/web/test4']
+      });
+    });
   });
 
   describe('replaceInTemplates', () => {

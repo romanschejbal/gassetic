@@ -1,6 +1,6 @@
 {
   "name": "gassetic",
-  "version": "1.0.5",
+  "version": "1.0.7",
   "description": "Symfony2 Assetic replacement based on the gulp build tool",
   "main": "./dist/index.js",
   "bin": {
@@ -53,5 +53,8 @@
     "gulp-util": "^3.0.8",
     "js-yaml": "^3.7.0",
     "yargs": "^6.6.0"
+  },
+  "optionalDependencies": {
+    "fsevents": "*"
   }
 }

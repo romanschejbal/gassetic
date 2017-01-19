@@ -139,8 +139,8 @@ export const runTasks = async (files, tasks, { outputFolder, webPath }) =>
           gutil.log(gutil.colors.white('▸ ') + gutil.colors.gray(`compiled ${file.path}`));
 
         if (!webPath) return;
-        const filepath = file.path.substring(process.cwd().length).replace(outputFolder, '');
-        const fileWebPath = path.join(webPath, filepath);
+        const filepath = file.path.substring(process.cwd().length).replace(/\\/g, '/').replace(outputFolder, '');
+        const fileWebPath = path.join(webPath, filepath).replace(/\\/g, '/');
         filesCreated.push(fileWebPath);
       }))
       .on('end', () => resolve({ [destFilename]: filesCreated }));
