@@ -1,4 +1,4 @@
-# Gassetic [![build status](https://travis-ci.org/romanschejbal/gassetic.svg?branch=master)](https://travis-ci.org/romanschejbal/gassetic) ![deps status](https://david-dm.org/romanschejbal/gassetic.png)
+# Gassetic ![build status](https://circleci.com/gh/romanschejbal/gassetic.png?style=shield)
 
 
 ## Summary
