@@ -25,13 +25,18 @@ export default async () => {
     const steps = getBuildSteps(config);
     const modules = loadModules(config.requires);
 
+
     // clear
     await Promise.all(steps.map(async deps =>
       Promise.all(deps.map(async dep =>
-        del(config.mimetypes[dep][env].outputFolder)))));
+        Object.keys(config.mimetypes[dep][env].files)
+          .map(destinationFolder =>
+            del(path.join(config.mimetypes[dep][env].outputFolder, destinationFolder)))))));
 
-    if (command === 'clear')
+    if (command === 'clear') {
+      gutil.log(gutil.colors.green('Cleared.'));
       return;
+    }
 
     if (steps.length == 0)
       return;
@@ -88,6 +93,7 @@ export default async () => {
     gutil.log(gutil.colors.red(e));
     process.exit(1);
   }
+  process.exit(0);
 };
 
 // steps
@@ -160,7 +166,7 @@ export const replaceInTemplates = (replacementPaths, files, environment) =>
       templates.forEach(template => {
         const content = files.reduce((newContent, mimetype) =>
           Object.entries(mimetype.files).reduce((newContent, [destFilename, files]) => {
-            const scripts = files.map(path => mimetype.htmlTag.replace('%path%', path));
+            const scripts = files.map(path => (mimetype.htmlTag || getDefaultHtmlTag(path)).replace('%path%', path));
             return newContent.replace(
               new RegExp(`([ \t]*)<!-- ${environment}:${destFilename} -->([\\s\\S]*?)<!-- endbuild -->`, 'ig'),
               `$1<!-- ${environment}:${destFilename} -->\n$1${scripts.map(script => '  ' + script).join('\n$1')}\n$1<!-- endbuild -->`
@@ -174,6 +180,11 @@ export const replaceInTemplates = (replacementPaths, files, environment) =>
       reject(e);
     }
   });
+
+const getDefaultHtmlTag = filename => ({
+  '.js': '<script src="%path%"></script>',
+  '.css': '<link rel="stylesheet" type="text/css" href="%path%">'
+})[path.extname(filename)] || '<!-- htmlTag not provided -->';
 
 const createResultsFile = (resultsFolder = process.cwd(), files, environment) =>
   new Promise(resolve => {

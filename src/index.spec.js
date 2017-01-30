@@ -13,7 +13,8 @@ describe('index', () => {
       mockLoadFn,
       mockValidateFn,
       mockBabelModule,
-      mockSassModule;
+      mockSassModule,
+      delModule;
 
     beforeEach(() => {
       mockLoadFn = jest.fn(() => ({
@@ -28,6 +29,7 @@ describe('index', () => {
       mockValidateFn = jest.fn();
       mockBabelModule = jest.fn();
       mockSassModule = jest.fn();
+      delModule = jest.fn();
 
       jest.mock('./config', () => ({
         load: mockLoadFn,
@@ -36,6 +38,7 @@ describe('index', () => {
       jest.mock('gulp-babel', mockBabelModule, { virtual: true });
       jest.mock('gulp-sass', mockSassModule, { virtual: true });
       jest.mock('custom', jest.fn(), { virtual: true });
+      jest.mock('del', () => delModule);
     });
 
     it('loads configuration with default filename', () => {
@@ -52,6 +55,29 @@ describe('index', () => {
       gassetic().default();
       expect(mockBabelModule).toHaveBeenCalled();
       expect(mockSassModule).toHaveBeenCalled();
+    });
+
+    it('deletes only user specified folders, not the outputFolder itself', () => {
+      jest.mock('yargs', () => ({ argv: { _: ['clear'] } }));
+      mockLoadFn = jest.fn(() => ({
+        requires: {},
+        mimetypes: {
+          css: {
+            dev: {
+              files: {
+                'test1.css': ['something.css'],
+                'test2.css': ['something2.css']
+              },
+              tasks: [],
+              outputFolder: 'dest'
+            }
+          }
+        },
+        default: ['css']
+      }));
+      gassetic().default();
+      expect(delModule.mock.calls[0]).toEqual(['dest/test1.css']);
+      expect(delModule.mock.calls[1]).toEqual(['dest/test2.css']);
     });
   });
 
@@ -71,7 +97,7 @@ describe('index', () => {
       ]);
     });
 
-    it('returns the correect order for buildSteps recursively', () => {
+    it('returns the correct order for buildSteps recursively', () => {
       const steps = gassetic().getBuildSteps({
         mimetypes: {
           first: { deps: ['second'] },
@@ -85,7 +111,7 @@ describe('index', () => {
       ]);
     });
 
-    it('returns the correect order for buildSteps recursively - advanced', () => {
+    it('returns the correct order for buildSteps recursively - advanced', () => {
       const steps = gassetic().getBuildSteps({
         mimetypes: {
           first: { deps: ['second'] },
@@ -278,6 +304,46 @@ describe('index', () => {
         <!-- dev:build.css -->
           <link rel="stylesheet" type="text/css" href="{{ asset("./test1") }}">
           <link rel="stylesheet" type="text/css" href="{{ asset("./test2") }}">
+        <!-- endbuild -->
+        pug
+      `);
+    });
+
+    it('if htmlTag is not provided, it uses default ones', async () => {
+      const template = `
+        boo
+        <!-- dev:build.js --><!-- endbuild -->
+        foo
+        <!-- dev:build.css -->
+        <!-- endbuild -->
+        pug
+      `;
+      const fsMock = {
+        ...fs,
+        readFileSync: jest.fn(() => template),
+        writeFileSync: jest.fn()
+      };
+      jest.mock('fs', () => fsMock);
+      await gassetic().replaceInTemplates(['./bin/*.js'], [{
+        files: {
+          'build.js': ['./test1.js', './test2.js']
+        }
+      }, {
+        files: {
+          'build.css': ['./test1.css', './test2.css']
+        }
+      }], 'dev');
+      expect(fsMock.readFileSync).toHaveBeenCalledWith('./bin/index.js', 'utf-8');
+      expect(fsMock.writeFileSync).toHaveBeenCalledWith('./bin/index.js', `
+        boo
+        <!-- dev:build.js -->
+          <script src="./test1.js"></script>
+          <script src="./test2.js"></script>
+        <!-- endbuild -->
+        foo
+        <!-- dev:build.css -->
+          <link rel="stylesheet" type="text/css" href="./test1.css">
+          <link rel="stylesheet" type="text/css" href="./test2.css">
         <!-- endbuild -->
         pug
       `);
