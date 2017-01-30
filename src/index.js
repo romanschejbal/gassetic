@@ -27,11 +27,19 @@ export default async () => {
 
 
     // clear
-    await Promise.all(steps.map(async deps =>
-      Promise.all(deps.map(async dep =>
-        Object.keys(config.mimetypes[dep][env].files)
-          .map(destinationFolder =>
-            del(path.join(config.mimetypes[dep][env].outputFolder, destinationFolder)))))));
+    await Promise.all(
+      steps.reduce((promises, deps) =>
+        promises.concat(
+          deps.reduce((currentMimetypePromises, dep) =>
+            currentMimetypePromises.concat(
+              Object.keys(config.mimetypes[dep].files || {})
+                .map(destinationFolder =>
+                  path.join(config.mimetypes[dep][env].outputFolder, destinationFolder))
+            )
+          , [])
+        ), [])
+        .map(destinationFolder => del(destinationFolder))
+    );
 
     if (command === 'clear') {
       gutil.log(gutil.colors.green('Cleared.'));
@@ -88,12 +96,13 @@ export default async () => {
     if (hasErrors) {
       gutil.log(gutil.colors.red('But hey, there were errors'));
       process.exit(1);
+    } else if (env !== 'dev' || command === 'build') {
+      process.exit(0);
     }
   } catch (e) {
-    gutil.log(gutil.colors.red(e));
+    gutil.log(gutil.colors.red(e, e.stack));
     process.exit(1);
   }
-  process.exit(0);
 };
 
 // steps
