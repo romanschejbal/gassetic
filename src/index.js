@@ -3,6 +3,7 @@ import gulp from 'gulp';
 import gutil from 'gulp-util';
 import plumber from 'gulp-plumber';
 import tap from 'gulp-tap';
+import gulpFilter from 'gulp-filter';
 import fs from 'fs';
 import path from 'path';
 import del from 'del';
@@ -25,13 +26,26 @@ export default async () => {
     const steps = getBuildSteps(config);
     const modules = loadModules(config.requires);
 
-    // clear
-    await Promise.all(steps.map(async deps =>
-      Promise.all(deps.map(async dep =>
-        del(config.mimetypes[dep][env].outputFolder)))));
 
-    if (command === 'clear')
+    // clear
+    await Promise.all(
+      steps.reduce((promises, deps) =>
+        promises.concat(
+          deps.reduce((currentMimetypePromises, dep) =>
+            currentMimetypePromises.concat(
+              Object.keys(config.mimetypes[dep].files || {})
+                .map(destinationFolder =>
+                  path.join(config.mimetypes[dep][env].outputFolder, destinationFolder))
+            )
+          , [])
+        ), [])
+        .map(destinationFolder => del(destinationFolder))
+    );
+
+    if (command === 'clear') {
+      gutil.log(gutil.colors.green('Cleared.'));
       return;
+    }
 
     if (steps.length == 0)
       return;
@@ -83,9 +97,11 @@ export default async () => {
     if (hasErrors) {
       gutil.log(gutil.colors.red('But hey, there were errors'));
       process.exit(1);
+    } else if (env !== 'dev' || command === 'build') {
+      process.exit(0);
     }
   } catch (e) {
-    gutil.log(gutil.colors.red(e));
+    gutil.log(gutil.colors.red(e, e.stack));
     process.exit(1);
   }
 };
@@ -111,12 +127,17 @@ const loadModules = requires => {
 
 // tasks
 export const getTasks = (modules, mimetype, environment) =>
-  mimetype[environment].tasks.map(task => {
+  mimetype[environment].tasks.reduce((tasks, task) => {
     if (task.callback) {
       task.callback = modules[task.callback];
     }
-    return { ...task, fn: getModuleFunction(modules, task.name) };
-  });
+    const taskDescription = { ...task, fn: getModuleFunction(modules, task.name) };
+    if (task.filter) {
+      const filter = gulpFilter(task.filter, { restore: true });
+      return [...tasks, { ...taskDescription, filter }];
+    }
+    return [...tasks, taskDescription];
+  }, []);
 
 const getModuleFunction = (modules, taskName) =>
   taskName.split('.').reduce((scope, taskPart) => scope[taskPart], modules);
@@ -126,11 +147,19 @@ export const runTasks = async (files, tasks, { outputFolder, webPath }) =>
     try {
       const filesCreated = [];
       [{ fn: plumber, callback: e => reject(e) }].concat(tasks).reduce(
-        (pipe, nextTask) =>
-          pipe.pipe(nextTask.callback ?
+        (pipe, nextTask) => {
+          if (nextTask.filter) {
+            pipe = pipe.pipe(nextTask.filter);
+          }
+          pipe = pipe.pipe(nextTask.callback ?
             nextTask.fn(nextTask.callback)
             : replaceArguments(nextTask, { filename: destFilename })()
-          ),
+          );
+          if (nextTask.filter) {
+            pipe = pipe.pipe(nextTask.filter.restore);
+          }
+          return pipe;
+        },
         gulp.src(files[destFilename])
       )
       .pipe(gulp.dest(path.join(outputFolder, destFilename)))
@@ -160,7 +189,7 @@ export const replaceInTemplates = (replacementPaths, files, environment) =>
       templates.forEach(template => {
         const content = files.reduce((newContent, mimetype) =>
           Object.entries(mimetype.files).reduce((newContent, [destFilename, files]) => {
-            const scripts = files.map(path => mimetype.htmlTag.replace('%path%', path));
+            const scripts = files.map(path => (mimetype.htmlTag || getDefaultHtmlTag(path)).replace('%path%', path));
             return newContent.replace(
               new RegExp(`([ \t]*)<!-- ${environment}:${destFilename} -->([\\s\\S]*?)<!-- endbuild -->`, 'ig'),
               `$1<!-- ${environment}:${destFilename} -->\n$1${scripts.map(script => '  ' + script).join('\n$1')}\n$1<!-- endbuild -->`
@@ -174,6 +203,11 @@ export const replaceInTemplates = (replacementPaths, files, environment) =>
       reject(e);
     }
   });
+
+const getDefaultHtmlTag = filename => ({
+  '.js': '<script src="%path%"></script>',
+  '.css': '<link rel="stylesheet" type="text/css" href="%path%">'
+})[path.extname(filename)] || '<!-- htmlTag not provided -->';
 
 const createResultsFile = (resultsFolder = process.cwd(), files, environment) =>
   new Promise(resolve => {
