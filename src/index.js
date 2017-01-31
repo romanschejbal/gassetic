@@ -3,6 +3,7 @@ import gulp from 'gulp';
 import gutil from 'gulp-util';
 import plumber from 'gulp-plumber';
 import tap from 'gulp-tap';
+import gulpFilter from 'gulp-filter';
 import fs from 'fs';
 import path from 'path';
 import del from 'del';
@@ -126,12 +127,17 @@ const loadModules = requires => {
 
 // tasks
 export const getTasks = (modules, mimetype, environment) =>
-  mimetype[environment].tasks.map(task => {
+  mimetype[environment].tasks.reduce((tasks, task) => {
     if (task.callback) {
       task.callback = modules[task.callback];
     }
-    return { ...task, fn: getModuleFunction(modules, task.name) };
-  });
+    const taskDescription = { ...task, fn: getModuleFunction(modules, task.name) };
+    if (task.filter) {
+      const filter = gulpFilter(task.filter, { restore: true });
+      return [...tasks, { ...taskDescription, filter }];
+    }
+    return [...tasks, taskDescription];
+  }, []);
 
 const getModuleFunction = (modules, taskName) =>
   taskName.split('.').reduce((scope, taskPart) => scope[taskPart], modules);
@@ -141,11 +147,19 @@ export const runTasks = async (files, tasks, { outputFolder, webPath }) =>
     try {
       const filesCreated = [];
       [{ fn: plumber, callback: e => reject(e) }].concat(tasks).reduce(
-        (pipe, nextTask) =>
-          pipe.pipe(nextTask.callback ?
+        (pipe, nextTask) => {
+          if (nextTask.filter) {
+            pipe = pipe.pipe(nextTask.filter);
+          }
+          pipe = pipe.pipe(nextTask.callback ?
             nextTask.fn(nextTask.callback)
             : replaceArguments(nextTask, { filename: destFilename })()
-          ),
+          );
+          if (nextTask.filter) {
+            pipe = pipe.pipe(nextTask.filter.restore);
+          }
+          return pipe;
+        },
         gulp.src(files[destFilename])
       )
       .pipe(gulp.dest(path.join(outputFolder, destFilename)))

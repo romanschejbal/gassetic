@@ -64,12 +64,12 @@ describe('index', () => {
         mimetypes: {
           css: {
             dev: {
-              files: {
-                'test1.css': ['something.css'],
-                'test2.css': ['something2.css']
-              },
               tasks: [],
               outputFolder: 'dest'
+            },
+            files: {
+              'test1.css': ['something.css'],
+              'test2.css': ['something2.css']
             }
           }
         },
