@@ -52,7 +52,6 @@ mimetypes:
       tasks:
         - { name: "babel" }
         - { name: "freeze", filter: "*.babel.js" }
-      htmlTag: "<script type='text/javascript' src='{{ asset('%path%') }}'></script>"
     prod:
       outputFolder: "./dest-prod"
       webPath: "/web"

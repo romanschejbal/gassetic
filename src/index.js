@@ -65,7 +65,7 @@ export default async () => {
           gutil.log(`${gutil.colors.green('✓')} ${gutil.colors.green(dep)} finished ${gutil.colors.gray(`in ${Math.round((new Date() - startTaskTime) / 10) / 100}s`)}`);
           replacements.push({
             mimetype: dep,
-            htmlTag: config.mimetypes[dep][env].htmlTag || `<!-- missing htmlTag ${dep} -> ${env} -->`,
+            htmlTag: config.mimetypes[dep][env].htmlTag || getDefaultHtmlTag(Object.keys(files)[0] || ''),
             files
           });
 
