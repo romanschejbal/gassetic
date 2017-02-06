@@ -142,3 +142,5 @@ npm test
 The MIT License (MIT)
 
 Copyright (c) 2014 Roman Schejbal
+
+Donate: 1K4HAJqnh8PPomJj47vWNP3GPNF2LE2FEt
