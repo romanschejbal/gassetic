@@ -15,12 +15,12 @@ window = null;
   return _regenerator2.default.wrap(function _callee$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
-        casey 0:
+        case 0:
           _context.next = 2;
-          return fetch('hey');
+          return fetch2('hey');
 
-        casey 2:
-        casey 'end':
+        case 2:
+        case 'end':
           return _context.stop();
       }
     }
