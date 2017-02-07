@@ -17,7 +17,7 @@ window = null;
       switch (_context.prev = _context.next) {
         case 0:
           _context.next = 2;
-          return fetch('hey');
+          return fetch2('hey');
 
         case 2:
         case 'end':

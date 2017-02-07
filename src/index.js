@@ -178,8 +178,10 @@ export const runTasks = async (files, tasks, { outputFolder, webPath }) =>
     }
   })))).reduce((all, next) => ({ ...all, ...next }), {});
 
-const replaceArguments = ({ fn, args }, { filename }) => () =>
-  fn(JSON.parse(JSON.stringify(args || '').replace('%filename%', filename)));
+const replaceArguments = ({ fn, args }, { filename }) => () => {
+  const replaced = JSON.parse(JSON.stringify(args || []).replace('%filename%', filename));
+  return fn.apply(fn, Array.isArray(replaced) && replaced || [replaced]);
+};
 
 // replacement paths
 export const replaceInTemplates = (replacementPaths, files, environment) =>

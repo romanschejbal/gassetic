@@ -6,6 +6,7 @@ requires:
   babel: gulp-babel
   livereload: gulp-livereload
   cleanCss: gulp-clean-css
+  replace: gulp-replace
   shorter: ./custom-callback.js
 mimetypes:
   css:
@@ -59,13 +60,14 @@ mimetypes:
         - { name: "babel" }
         - { name: "concat", args: "%filename%" }
         - { name: "freeze" }
+        - { name: "replace", args: ['fetch', 'fetch2'] }
         - { name: "rename", callback: shorter }
       htmlTag: "<script type='text/javascript' src='{{ asset('%path%') }}'></script>"
     files:
       build.js:
         - "src/*.js"
 default:
-  - css
+  # - css
   - js
 replacementPaths:
   - "./**/*.html"

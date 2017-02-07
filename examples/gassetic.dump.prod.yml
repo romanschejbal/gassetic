@@ -1,13 +1,3 @@
-- mimetype: sass
-  htmlTag: <!-- missing htmlTag sass -> prod -->
-  files:
-    fromSass.css:
-      - /web/dest-temp/fromSass.css/style.css
-- mimetype: css
-  htmlTag: '<link rel=''stylesheet'' href=''{{ asset(''%path%'') }}'' />'
-  files:
-    build.css:
-      - /web/dest-prod/build.css/build_4e83.css
 - mimetype: js
   htmlTag: '<script type=''text/javascript'' src=''{{ asset(''%path%'') }}''></script>'
   files:
