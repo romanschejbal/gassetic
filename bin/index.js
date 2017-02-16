@@ -1,3 +1,3 @@
 #!/usr/bin/env node
-var gassetic = require('../dist/src/index.js').default;
+var gassetic = require('../dist/index.js').default;
 gassetic();

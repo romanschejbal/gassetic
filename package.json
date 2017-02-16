@@ -10,7 +10,8 @@
     "lint": "eslint ./src ./bin.js",
     "test": "jest",
     "dev": "jest --watch",
-    "compile": "rm -rf dist && mkdir dist && babel src/index.js src/config/index.js --out-dir dist",
+    "compile-legacy": "rm -rf dist && mkdir dist && babel src/index.js src/config/index.js --out-dir dist",
+    "compile": "rm -rf dist && mkdir dist && webpack --optimize-minimize",
     "prepublish": "npm run compile"
   },
   "files": [
@@ -36,8 +37,11 @@
   "devDependencies": {
     "babel-eslint": "^7.1.0",
     "babel-jest": "^17.0.0",
+    "babel-loader": "^6.2.10",
     "eslint": "^3.10.0",
-    "jest": "^18.1.0"
+    "jest": "^18.1.0",
+    "webpack": "^2.2.1",
+    "webpack-node-externals": "^1.5.4"
   },
   "dependencies": {
     "babel-cli": "^6.18.0",
