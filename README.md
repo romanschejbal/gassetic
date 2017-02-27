@@ -96,22 +96,22 @@ default:
 ```
 
 2) Within root of your project run:
-
+```
   npm install gulp-less
   npm install gulp-minify-css
   npm install gulp-uglify
   npm install gulp-concat
-  ... else that you need and have defined in the 'requires' section of the config
-
+  ... anything else that you need and have defined in the 'requires' section of the config
+```
 3) Update your templates from
-
+```
   <link rel="stylesheet" ...
-
+```
 To:
-
+```
   <!-- prod:frontend.css --><!-- endbuild -->
-
-The strings "<!-- {environment}:{filename} --><!-- endbuild -->" will be searched for in the 'replacementPaths' list in the settings and replaced with the generated tags and files
+```
+The strings `<!-- {environment}:{filename} --><!-- endbuild -->` will be searched for in the 'replacementPaths' list in the settings and replaced with the generated tags and files
 
 4) install gassetic ```npm install -g gassetic```
 
