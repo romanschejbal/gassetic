@@ -1,5 +1,7 @@
 # Gassetic ![build status](https://circleci.com/gh/romanschejbal/gassetic.png?style=shield)
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/romanschejbal/gassetic.svg)](https://greenkeeper.io/)
+
 
 ## Summary
 Gassetic is an [Assetic](https://github.com/kriswallsmith/assetic) replacement which is based on the gulp build tool for more comfortable frontend development and dependency management
